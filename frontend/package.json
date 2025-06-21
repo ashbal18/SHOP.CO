@@ -1,0 +1,53 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.4",
+    "@react-google-maps/api": "^2.20.6",
+    "auth": "^1.2.3",
+    "axios": "^1.9.0",
+    "formik": "^2.4.6",
+    "handlers": "^1.0.3",
+    "haversine-distance": "^1.2.3",
+    "icons": "^1.0.0",
+    "jwt-decode": "^4.0.0",
+    "leaflet": "^1.9.4",
+    "lodash.debounce": "^4.0.8",
+    "lucide-react": "^0.511.0",
+    "next": "^15.3.2",
+    "next-auth": "^5.0.0-beta.28",
+    "react": "^19.1.0",
+    "react-dom": "^19.0.0",
+    "react-icons": "^5.5.0",
+    "react-leaflet": "^5.0.0",
+    "react-router-dom": "^7.6.0",
+    "react-toastify": "^11.0.5",
+    "sonner": "^2.0.5",
+    "toastify": "^2.0.1",
+    "xendit-node": "^7.0.0",
+    "yup": "^1.6.1"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/jwt-decode": "^2.2.1",
+    "@types/leaflet": "^1.9.18",
+    "@types/lodash.debounce": "^4.0.9",
+    "@types/next-auth": "^3.13.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.2",
+    "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}

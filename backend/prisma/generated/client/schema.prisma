@@ -1,0 +1,239 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                    String     @id @default(uuid())
+  name                  String
+  email                 String     @unique
+  password              String
+  avatar                String     @default("https://res.cloudinary.com/dn6uglajh/image/upload/v1733990935/blank-image_yfczs3.jpg")
+  roles                 Role       @default(CUSTOMER)
+  referralCode          String     @unique
+  referredBy            User?      @relation("Referral", fields: [referredById], references: [id])
+  referredById          String?
+  referrals             User[]     @relation("Referral")
+  poin                  Poin[]
+  vouchers              Voucher[]
+  cartItems             CartItem[]
+  orders                Order[]
+  store                 Store?
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+  isVerify              Boolean    @default(false)
+  isPendingVerification Boolean    @default(true)
+  Address               Address[]
+}
+
+model Address {
+  address_id     String   @id @default(uuid()) // Change to String
+  id             String // Change to String
+  address_name   String   @db.Text
+  address        String   @db.Text
+  subdistrict    String?
+  city           String
+  city_id        String?
+  province       String
+  province_id    String?
+  postcode       String?
+  latitude       Float?
+  longitude      Float?
+  destination_id String?
+  is_primary     Boolean  @default(false)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @default(now())
+  user           User     @relation(fields: [id], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  CUSTOMER
+}
+
+model Store {
+  id        String         @id @default(uuid())
+  name      String
+  address   String
+  admin     User           @relation(fields: [adminId], references: [id])
+  adminId   String         @unique
+  products  ProductStock[]
+  orders    Order[]        @relation("StoreOrders")
+  latitude  Float?
+  longitude Float?
+  discount  Discount[]     @relation("StoreDiscounts")
+  city_id   Int?
+  city      City?          @relation(fields: [city_id], references: [id])
+  createdAt DateTime       @default(now())
+}
+
+model Category {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  products Product[]
+}
+
+model Product {
+  id          String         @id @default(uuid())
+  name        String
+  description String
+  price       Int // dalam satuan terkecil (misal: sen)
+  imageUrl    String
+  category    Category       @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  stocks      ProductStock[]
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  discount    Discount[]     @relation("ProductDiscounts")
+  createdAt   DateTime       @default(now())
+}
+
+model ProductStock {
+  id        String   @id @default(uuid())
+  store     Store    @relation(fields: [storeId], references: [id])
+  storeId   String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  updatedAt DateTime @updatedAt
+
+  @@unique([storeId, productId])
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  storeId   String
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  user            User        @relation(fields: [userId], references: [id])
+  userId          String
+  shippingAddress String
+  totalAmount     Int
+  status          OrderStatus @default(PENDING_PAYMENT)
+  invoiceUrl      String?
+  warehouse       Warehouse?  @relation(fields: [warehouseId], references: [id])
+  store           Store       @relation("StoreOrders", fields: [storeId], references: [id])
+  storeId         String
+  voucher         Voucher?    @relation("VoucherOrders", fields: [voucherId], references: [id])
+  voucherId       String?
+  warehouseId     String?
+  paymentProof    String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  expiredAt       DateTime
+  confirmedAt     DateTime?
+  items           OrderItem[]
+}
+
+model Warehouse {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  latitude  Float
+  longitude Float
+  orders    Order[]
+  createdAt DateTime @default(now())
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PENDING_CONFIRM
+  PAID
+  PROCESSING
+  DELIVERY
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  price     Int
+}
+
+model Poin {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  amount    Int
+  expiredAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Voucher {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  user        User?    @relation(fields: [userId], references: [id])
+  userId      String?
+  percentage  Int
+  maxDiscount Int
+  expiredAt   DateTime
+  used        Boolean  @default(false)
+  orders      Order[]  @relation("VoucherOrders")
+}
+
+model Discount {
+  id           String       @id @default(uuid())
+  name         String
+  type         DiscountType
+  amount       Int
+  isPercentage Boolean      @default(false)
+  minPurchase  Int?
+  maxDiscount  Int?
+  buyQuantity  Int?
+  getQuantity  Int?
+  productId    String?
+  product      Product?     @relation("ProductDiscounts", fields: [productId], references: [id])
+  storeId      String
+  store        Store        @relation("StoreDiscounts", fields: [storeId], references: [id])
+  startDate    DateTime
+  endDate      DateTime
+  isActive     Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+}
+
+enum DiscountType {
+  MANUAL
+  MIN_PURCHASE
+  BUY_ONE_GET_ONE
+}
+
+enum DiscountStatus {
+  ACTIVE
+  EXPIRED
+  SCHEDULED
+}
+
+model Province {
+  id   Int    @id
+  name String
+  City City[]
+}
+
+model City {
+  id          Int      @id
+  name        String
+  province_id Int
+  province    Province @relation(fields: [province_id], references: [id])
+  stores      Store[]
+}

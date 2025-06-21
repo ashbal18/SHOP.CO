@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Reset</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .email-header {
+            background-color: #4CAF50;
+            padding: 20px;
+            text-align: center;
+            color: #fff;
+            border-radius: 8px 8px 0 0;
+        }
+        .email-content {
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 0 0 8px 8px;
+        }
+        .email-footer {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>Password Reset Request</h1>
+        </div>
+        <div class="email-content">
+            <p>Hello {{name}},</p>
+            <p>We received a request to reset your password. To reset your password, please click the link below:</p>
+            <p><a href="{{resetLink}}">Reset Your Password</a></p>
+            <p>If you didn't request this, please ignore this email.</p>
+        </div>
+        <div class="email-footer">
+            <p>Thank you for using our service!</p>
+        </div>
+    </div>
+</body>
+</html>

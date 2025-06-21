@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm Super Admin</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+    .message {
+      font-size: 16px;
+      color: #555;
+      line-height: 1.5;
+      margin: 20px 0;
+    }
+    .button {
+      display: inline-block;
+      padding: 12px 25px;
+      margin: 10px 0;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      background-color: #28a745;
+      color: #fff;
+      border-radius: 4px;
+      border: none;
+    }
+    .button.deny {
+      background-color: #dc3545;
+    }
+    .footer {
+      font-size: 12px;
+      text-align: center;
+      color: #777;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      Confirm Super Admin Status
+    </div>
+    <div class="message">
+      <p>Dear {{creatorName}},</p>
+      <p>You are being asked to confirm whether you approve the promotion of the user below to Super Admin:</p>
+      <ul>
+        <li><strong>Name:</strong> {{creatorName}}</li>
+        <li><strong>Email:</strong> {{userEmail}}</li>
+      </ul>
+      <p>Please click the buttons below to approve or deny this promotion:</p>
+
+      <a href="{{link}}" class="button">Confirm Promotion</a>
+      <a href="{{link}}?confirm=false" class="button deny">Deny Promotion</a>
+    </div>
+
+    <div class="footer">
+      <p>If you did not request this action, please ignore this email.</p>
+    </div>
+  </div>
+
+</body>
+</html>
