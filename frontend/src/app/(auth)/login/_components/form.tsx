@@ -52,7 +52,7 @@ export default function FormLogin() {
       if (res?.ok && res.url) {
         toast.success(data.message);
         action.resetForm();
-        window.location.href = res.url; // force redirect (fix stuck on mobile)
+        window.location.href = res.url; 
       } else {
         toast.error("Email atau password salah");
       }
