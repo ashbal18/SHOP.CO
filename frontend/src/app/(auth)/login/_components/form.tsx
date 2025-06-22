@@ -29,16 +29,13 @@ export default function FormLogin() {
     password: "",
   };
 
-  const onLogin = async (
-    value: ILoginForm,
-    action: FormikHelpers<ILoginForm>
-  ) => {
+  const onLogin = async (value: ILoginForm, action: FormikHelpers<ILoginForm>) => {
     try {
       const { data } = await axios.post("/auth/login", value);
       const user = data.data;
 
-       await signIn("credentials", {
-        callbackUrl: "/", 
+      const res = await signIn("credentials", {
+        redirect: false, // disable auto-redirect
         id: user.id,
         email: user.email,
         password: value.password,
@@ -49,15 +46,22 @@ export default function FormLogin() {
         role: user.role,
         storeId: user.storeId ?? null,
         accessToken: data.access_token,
+        callbackUrl: "/", // manual redirect to home
       });
 
-      toast.success(data.message);
-      action.resetForm();
+      if (res?.ok && res.url) {
+        toast.success(data.message);
+        action.resetForm();
+        window.location.href = res.url; // force redirect (fix stuck on mobile)
+      } else {
+        toast.error("Email atau password salah");
+      }
     } catch (err) {
       console.error(err);
       toast.error("Terjadi kesalahan saat login.");
     }
   };
+
   const handleGoogleLogin = async () => {
     try {
       const googleResponse = await signIn("google", {
@@ -68,7 +72,6 @@ export default function FormLogin() {
         throw new Error("Gagal login dengan Google.");
       }
 
-      // Ambil session Google yang sudah login
       const session = await fetch("/api/auth/session").then((res) => res.json());
 
       const googleUser = session?.user;
@@ -84,11 +87,10 @@ export default function FormLogin() {
 
       const user = data.data;
 
-
       await signOut({ redirect: false });
 
-       await signIn("credentials", {
-        callbackUrl: "/", 
+      const res = await signIn("credentials", {
+        redirect: false,
         id: user.id,
         email: user.email,
         password: user.generatedPassword,
@@ -98,9 +100,15 @@ export default function FormLogin() {
         referralBy: user.referredBy ?? "",
         role: user.role,
         accessToken: data.access_token,
+        callbackUrl: "/",
       });
 
-      toast.success("Login dengan Google berhasil.");
+      if (res?.ok && res.url) {
+        toast.success("Login dengan Google berhasil.");
+        window.location.href = res.url;
+      } else {
+        toast.error("Gagal login setelah verifikasi Google.");
+      }
     } catch (err) {
       console.error(err);
       toast.error("Terjadi kesalahan saat login dengan Google.");
@@ -184,7 +192,7 @@ export default function FormLogin() {
                 </button>
 
                 <div className="text-center mt-4">
-                  <span className="text-sm text-gray-500">Dont have an account? </span>
+                  <span className="text-sm text-gray-500">Don't have an account? </span>
                   <Link href="/register" className="text-blue-500 hover:underline">Register here</Link>
                 </div>
                 <div className="text-center mt-4">
