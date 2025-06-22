@@ -35,7 +35,7 @@ export default function FormLogin() {
       const user = data.data;
 
       const res = await signIn("credentials", {
-        redirect: false, // disable auto-redirect
+        redirect: false, 
         id: user.id,
         email: user.email,
         password: value.password,
@@ -46,7 +46,7 @@ export default function FormLogin() {
         role: user.role,
         storeId: user.storeId ?? null,
         accessToken: data.access_token,
-        callbackUrl: "/", // manual redirect to home
+        callbackUrl: "/", 
       });
 
       if (res?.ok && res.url) {
@@ -192,7 +192,7 @@ export default function FormLogin() {
                 </button>
 
                 <div className="text-center mt-4">
-                  <span className="text-sm text-gray-500">Don't have an account? </span>
+                  <span className="text-sm text-gray-500">Dont have an account? </span>
                   <Link href="/register" className="text-blue-500 hover:underline">Register here</Link>
                 </div>
                 <div className="text-center mt-4">
