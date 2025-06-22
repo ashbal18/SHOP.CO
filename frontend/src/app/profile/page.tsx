@@ -96,9 +96,9 @@ export default function ProfilePage() {
     <>
       <Navbar />
       <div className="flex h-screen w-full">
-        <div className="w-64 bg-gray-100 hidden md:block">
+        
           <Sidebar />
-        </div>
+      
 
         <main className="flex-1 p-8 overflow-auto">
           <h1 className="text-3xl font-bold mb-6">Profil Saya</h1>

@@ -112,9 +112,9 @@ export default function AddressList() {
     <>
       <Navbar />
       <div className="flex h-screen w-full">
-        <aside className="w-64 bg-gray-100 hidden md:block">
+       
           <Sidebar />
-        </aside>
+       
 
         <main className="flex-1 p-8 overflow-auto max-w-7xl mx-auto flex gap-8">
           <div className="flex-1">
