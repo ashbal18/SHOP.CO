@@ -147,8 +147,8 @@ export default function EditAddressModal({
         params: { keyword: destKeyword },
       });
       setDestResults(res.data.data || []);
-    } catch (err: any) {
-      setDestError(err.response?.data?.message || "Gagal cari tujuan");
+    } catch (err) {
+      console.error("Error fetching destinations:", err);
     } finally {
       setDestLoading(false);
     }
@@ -211,8 +211,8 @@ export default function EditAddressModal({
       );
       onUpdate(response.data);
       onClose();
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Gagal update alamat");
+    } catch (err) {
+      console.error("Error updating address:", err);
     } finally {
       setLoading(false);
     }
