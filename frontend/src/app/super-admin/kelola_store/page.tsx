@@ -6,7 +6,6 @@ import Sidebarsup from "@/components/navbar/navbar/Sidebarsup";
 import { useEffect, useState } from "react";
 import axios from "@/lib/axios";
 import { useSession } from "next-auth/react";
-import AddStoreModal from "@/components/modal/addstore";
 import EditStoreModal from "@/components/modal/editstore";
 
 interface Store {
@@ -28,7 +27,7 @@ export default function SuperAdminKelolaToko() {
   const { data: session, status } = useSession();
   const [stores, setStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  // const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [storeToEdit, setStoreToEdit] = useState<Store | null>(null);
 
@@ -55,9 +54,9 @@ export default function SuperAdminKelolaToko() {
     }
   }, [session]);
 
-  const handleAddStore = (newStore: Store) => {
-    setStores((prev) => [...prev, newStore]);
-  };
+  // const handleAddStore = (newStore: Store) => {
+  //   setStores((prev) => [...prev, newStore]);
+  // };
 
   const handleDeleteStore = async (id: string) => {
     if (!confirm("Apakah Anda yakin ingin menghapus toko ini?")) return;
@@ -127,7 +126,7 @@ export default function SuperAdminKelolaToko() {
               Daftar Toko
             </h1>
             <button
-              onClick={() => setIsAddModalOpen(true)}
+              // onClick={() => setIsAddModalOpen(true)}
               className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition duration-300"
             >
               <svg
@@ -200,12 +199,12 @@ export default function SuperAdminKelolaToko() {
             </div>
           )}
 
-          <AddStoreModal
+          {/* <AddStoreModal
             open={isAddModalOpen}
             onClose={() => setIsAddModalOpen(false)}
             onAdd={handleAddStore}
             token={session?.accessToken ?? ""}
-          />
+          /> */}
 
           <EditStoreModal
             open={isEditModalOpen}

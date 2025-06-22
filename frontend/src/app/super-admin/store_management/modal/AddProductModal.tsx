@@ -101,8 +101,8 @@ export default function AddProductModal({
       onAdd(res.data);
       resetForm();
       onClose();
-    } catch (error: any) {
-      alert(error.response?.data?.error || "Gagal menambahkan produk");
+    } catch (error) {
+     console.error("Error adding product:", error);
     } finally {
       setLoading(false);
     }

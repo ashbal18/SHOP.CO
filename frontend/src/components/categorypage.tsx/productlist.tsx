@@ -6,12 +6,36 @@ import axios from "@/lib/axios";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 
+type Category = {
+  name: string;
+};
+
+type Store = {
+  id: string;
+  name: string;
+};
+
+type Stock = {
+  quantity: number;
+};
+
+type Product = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  imageUrl?: string;
+  category?: Category;
+  store?: Store;
+  stocks?: Stock[];
+};
+
 export default function ProductList() {
   const { data: session, status } = useSession();
   const loadingSession = status === "loading";
 
-  const [products, setProducts] = useState([]);
-  const [stores, setStores] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [stores, setStores] = useState<Store[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -33,8 +57,8 @@ export default function ProductList() {
           }),
         ]);
 
-        setProducts(productRes.data);
-        setStores(storeRes.data.stores ?? storeRes.data);
+        setProducts(productRes.data as Product[]);
+        setStores((storeRes.data.stores ?? storeRes.data) as Store[]);
       } catch (err) {
         setError("Failed to load data");
         console.error(err);
@@ -47,12 +71,12 @@ export default function ProductList() {
   }, [session]);
 
   const uniqueCategories = useMemo(() => {
-    const categories = products.map((p: any) => p.category?.name || "Unknown");
+    const categories = products.map((p) => p.category?.name || "Unknown");
     return ["all", ...Array.from(new Set(categories))];
   }, [products]);
 
   const filteredProducts = useMemo(() => {
-    return products.filter((product: any) => {
+    return products.filter((product) => {
       const matchName = product.name.toLowerCase().includes(search.toLowerCase());
       const matchCategory =
         selectedCategory === "all" || product.category?.name === selectedCategory;
@@ -121,7 +145,7 @@ export default function ProductList() {
             className="border px-4 py-2 rounded-md w-full md:w-1/4"
           >
             <option value="all">All Stores</option>
-            {stores.map((store: any) => (
+            {stores.map((store) => (
               <option key={store.id} value={store.id}>
                 {store.name}
               </option>
@@ -131,10 +155,10 @@ export default function ProductList() {
 
         {/* PRODUCT LIST */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-          {filteredProducts.map((product: any) => {
+          {filteredProducts.map((product) => {
             const totalStock =
               Array.isArray(product.stocks)
-                ? product.stocks.reduce((sum: number, s: any) => sum + (s.quantity || 0), 0)
+                ? product.stocks.reduce((sum, s) => sum + (s.quantity || 0), 0)
                 : 0;
 
             return (

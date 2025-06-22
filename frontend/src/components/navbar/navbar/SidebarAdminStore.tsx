@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FiUsers, FiGrid, FiLogOut, FiHome, FiMapPin } from "react-icons/fi";
+import { FiUsers, FiGrid, FiLogOut, FiHome} from "react-icons/fi";
 import { signOut } from "next-auth/react";
 
 export default function Sidebarstore() {

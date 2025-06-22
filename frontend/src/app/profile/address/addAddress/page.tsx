@@ -4,7 +4,7 @@ import Navbar from "@/components/navbar/navbar/Navbar";
 import Sidebar from "@/components/navbar/navbar/Sidebar";
 import Footer from "@/components/navbar/navbar/footer";
 import { useSession } from "next-auth/react";
-import { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import axios from "@/lib/axios";
 
 import {
@@ -40,7 +40,18 @@ interface AddressFormData {
   latitude?: number;
   longitude?: number;
   is_primary: boolean;
-  destination_id?: string; // ✅ baru
+  destination_id?: string;
+}
+
+interface SessionUser {
+  id: string;
+  [key: string]: unknown;
+}
+
+interface SessionData {
+  accessToken?: string;
+  user?: SessionUser;
+  [key: string]: unknown;
 }
 
 const markerIcon = new L.Icon({
@@ -116,7 +127,6 @@ export default function CreateAddressPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
-  const [subdistricts, setSubdistricts] = useState<any[]>([]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -168,8 +178,17 @@ export default function CreateAddressPage() {
         params: { keyword: destKeyword },
       });
       setDestResults(res.data.data || []);
-    } catch (err: any) {
-      setDestError(err?.response?.data?.message || err.message || "Gagal cari tujuan");
+    } catch (err: unknown) {
+      if (typeof err === "object" && err !== null && "response" in err) {
+        setDestError(
+          (err as { response?: { data?: { message?: string } } }).response?.data?.message ||
+            "Gagal cari tujuan"
+        );
+      } else if (err instanceof Error) {
+        setDestError(err.message);
+      } else {
+        setDestError("Gagal cari tujuan");
+      }
     } finally {
       setDestLoading(false);
     }
@@ -184,7 +203,7 @@ export default function CreateAddressPage() {
       postcode: d.zip_code,
       city_id: String(d.id),
       province_id: d.province_name,
-      destination_id: String(d.id), // ✅ simpan ke form
+      destination_id: String(d.id),
     }));
     setDestKeyword(d.label);
     setDestResults([]);
@@ -192,10 +211,18 @@ export default function CreateAddressPage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const token = (session as any)?.accessToken;
-    const userId = (session?.user as any)?.id || "";
+    const sessionData = session as unknown as SessionData;
+    const token = sessionData?.accessToken;
+    const userId = (sessionData?.user as SessionUser)?.id || "";
 
-    if (!formData.address_name || !formData.address || !formData.subdistrict || !formData.city || !formData.province || !formData.postcode) {
+    if (
+      !formData.address_name ||
+      !formData.address ||
+      !formData.subdistrict ||
+      !formData.city ||
+      !formData.province ||
+      !formData.postcode
+    ) {
       setMessage("Harap isi semua field wajib.");
       return;
     }
@@ -220,12 +247,25 @@ export default function CreateAddressPage() {
           is_primary: false,
           destination_id: undefined,
         });
-        setSubdistricts([]);
+        
       } else {
         setMessage("Gagal membuat alamat.");
       }
-    } catch (err: any) {
-      setMessage(err?.response?.data?.message || "Gagal mengirim data.");
+    } catch (err: unknown) {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        (err as { response?: { data?: { message?: string } } }).response?.data?.message
+      ) {
+        setMessage(
+          (err as { response?: { data?: { message?: string } } }).response?.data?.message ?? "Gagal mengirim data."
+        );
+      } else if (err instanceof Error) {
+        setMessage(err.message);
+      } else {
+        setMessage("Gagal mengirim data.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -293,7 +333,7 @@ export default function CreateAddressPage() {
               <input type="hidden" name="province" value={formData.province} />
               <input type="hidden" name="city_id" value={formData.city_id || ""} />
               <input type="hidden" name="province_id" value={formData.province_id || ""} />
-              <input type="hidden" name="destination_id" value={formData.destination_id || ""} /> {/* ✅ */}
+              <input type="hidden" name="destination_id" value={formData.destination_id || ""} />
 
               <input name="postcode" placeholder="Kode Pos" onChange={handleChange} value={formData.postcode} className="w-full border rounded px-3 py-2" readOnly />
 

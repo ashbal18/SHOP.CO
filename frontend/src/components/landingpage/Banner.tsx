@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Banner() {
   return (
@@ -14,12 +15,12 @@ export default function Banner() {
           <p className="mt-6 text-gray-600 max-w-sm text-base font-normal leading-relaxed">
             Browse through our diverse range of meticulously crafted garments, designed to bring out your individuality and cater to your sense of style.
           </p>
-            <a
+            <Link
             href="/category"
             className="mt-8 inline-block px-8 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition-colors duration-300"
             >
             Shop Now
-            </a>
+            </Link>
         </div>
 
         {/* Right Column - Image */}

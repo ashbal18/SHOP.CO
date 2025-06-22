@@ -6,7 +6,7 @@ import axios from "@/lib/axios";
 interface AddStoreModalProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (store: any) => void;
+  onAdd: (store: object) => void;
   token: string;
 }
 
@@ -109,9 +109,8 @@ export default function AddStoreModal({
       setAdminId("");
       setCityId(null);
       onClose();
-    } catch (err: any) {
+    } catch (err) {
       console.error("Gagal menambahkan toko:", err);
-      setError(err.response?.data?.error || "Terjadi kesalahan.");
     } finally {
       setLoading(false);
     }

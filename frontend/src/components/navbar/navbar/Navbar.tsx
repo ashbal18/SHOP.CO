@@ -7,7 +7,7 @@ import Image from "next/image";
 
 
 export default function Navbar() {
-  const [showPromo, setShowPromo] = useState(true);
+  const [showPromo] = useState(true);
 
   // Using useSession hook to get session data
   const { data: session } = useSession();

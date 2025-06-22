@@ -61,9 +61,8 @@ export default function EditStoreAdminModal({
 
       onUpdate(res.data.user);
       setIsOpen(false);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Gagal mengupdate Store Admin:", err);
-      setError(err.response?.data?.message || "Terjadi kesalahan saat mengupdate admin.");
     } finally {
       setLoading(false);
     }

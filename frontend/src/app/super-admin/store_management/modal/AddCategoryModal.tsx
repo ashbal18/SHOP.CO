@@ -48,8 +48,8 @@ export default function AddCategoryModal({
       onAdd(res.data);
       setName("");
       onClose();
-    } catch (error: any) {
-      alert(error.response?.data?.message || "Gagal menambahkan kategori");
+    } catch (error) {
+      console.log("Error adding category:", error);
     } finally {
       setLoading(false);
     }

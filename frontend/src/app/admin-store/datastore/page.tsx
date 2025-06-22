@@ -16,7 +16,7 @@ interface Sale {
 }
 
 export default function SalesDataPage() {
-  const [sales, setSales] = useState<Sale[]>([
+  const [sales] = useState<Sale[]>([
     {
       id: 1,
       productName: "Sepatu Sneakers",

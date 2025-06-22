@@ -10,6 +10,7 @@ import axios from "@/lib/axios";
 import { toast } from "react-toastify";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
+import { Link } from "lucide-react";
 
 // Validasi schema menggunakan Yup
 const RegisterSchema = yup.object().shape({
@@ -185,9 +186,9 @@ export default function FormRegister() {
                 {/* Link login */}
                 <div className="text-center mt-4">
                   <span className="text-sm text-gray-500">Sudah punya akun? </span>
-                  <a href="/login" className="text-blue-500 hover:underline">
+                  <Link href="/login" className="text-blue-500 hover:underline">
                     Login di sini
-                  </a>
+                  </Link>
                 </div>
               </Form>
             );

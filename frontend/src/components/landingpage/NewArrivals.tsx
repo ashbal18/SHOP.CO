@@ -31,7 +31,7 @@ export default function NewArrivalsSection() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showAll, setShowAll] = useState(false);
+  const [showAll] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {

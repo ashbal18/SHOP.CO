@@ -6,12 +6,43 @@ import { X } from "lucide-react";
 import axios from "@/lib/axios";
 import { useSession } from "next-auth/react";
 
+type DiscountType = "MANUAL" | "MIN_PURCHASE" | "BUY_ONE_GET_ONE";
+
+interface Discount {
+  id: string;
+  name: string;
+  amount: number;
+  isPercentage: boolean;
+  startDate: string;
+  endDate: string;
+  type: DiscountType;
+  productId: string;
+  minPurchase?: number | null;
+  maxDiscount?: number | null;
+  buyQuantity?: number | null;
+  getQuantity?: number | null;
+}
+
 interface EditDiscountModalProps {
   isOpen: boolean;
   onClose: () => void;
-  discount: any;
+  discount: Discount;
   onDiscountUpdated: () => void;
 }
+
+type DiscountPayload = {
+  name: string;
+  type: DiscountType;
+  amount: number;
+  isPercentage: boolean;
+  productId: string;
+  startDate: string;
+  endDate: string;
+  minPurchase?: number | null;
+  maxDiscount?: number | null;
+  buyQuantity?: number | null;
+  getQuantity?: number | null;
+};
 
 export default function EditDiscountModal({
   isOpen,
@@ -26,7 +57,7 @@ export default function EditDiscountModal({
   const [isPercentage, setIsPercentage] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [type, setType] = useState("MANUAL");
+  const [type, setType] = useState<DiscountType>("MANUAL");
   const [productId, setProductId] = useState("");
 
   // Optional fields based on discount type
@@ -57,7 +88,7 @@ export default function EditDiscountModal({
   const handleUpdate = async () => {
     setLoading(true);
     try {
-      const payload: any = {
+      const payload: DiscountPayload = {
         name,
         type,
         amount,
@@ -76,8 +107,6 @@ export default function EditDiscountModal({
         payload.buyQuantity = buyQuantity;
         payload.getQuantity = getQuantity;
       }
-
-      console.log("Payload:", payload); // Debug
 
       await axios.put(`/discounts/${discount.id}`, payload, {
         headers: {

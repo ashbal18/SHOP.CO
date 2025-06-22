@@ -83,8 +83,8 @@ export default function EditProductModal({
       const updatedProduct: Product = res.data;
       onUpdate(updatedProduct);
       onClose();
-    } catch (error: any) {
-      alert(error.response?.data?.message || "Gagal update produk");
+    } catch (error) {
+      console.log("Error updating product:", error);
     } finally {
       setLoading(false);
     }

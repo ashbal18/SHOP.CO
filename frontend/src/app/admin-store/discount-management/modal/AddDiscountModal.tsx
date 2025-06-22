@@ -17,10 +17,30 @@ interface Store {
   name: string;
 }
 
+interface Discount {
+  id: string;
+  name: string;
+  type: "MANUAL" | "MIN_PURCHASE" | "BUY_ONE_GET_ONE";
+  amount: number;
+  isPercentage: boolean;
+  startDate: string;
+  endDate: string;
+  productId: string;
+  storeId: string;
+}
+
+interface SessionUser {
+  id: string;
+  name: string;
+  email: string;
+  role: "ADMIN" | "USER" | "SUPERADMIN";
+  storeId?: string;
+}
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onDiscountAdded: (discount: any) => void;
+  onDiscountAdded: (discount: Discount) => void;
 }
 
 export default function AddDiscountModal({
@@ -29,9 +49,12 @@ export default function AddDiscountModal({
   onDiscountAdded,
 }: Props) {
   const { data: session } = useSession();
+  const user = session?.user as SessionUser;
 
   const [name, setName] = useState("");
-  const [type, setType] = useState<"MANUAL" | "MIN_PURCHASE" | "BUY_ONE_GET_ONE">("MANUAL");
+  const [type, setType] = useState<
+    "MANUAL" | "MIN_PURCHASE" | "BUY_ONE_GET_ONE"
+  >("MANUAL");
   const [amount, setAmount] = useState<number>(0);
   const [isPercentage, setIsPercentage] = useState(false);
   const [startDate, setStartDate] = useState("");
@@ -50,12 +73,12 @@ export default function AddDiscountModal({
 
     const fetchStores = async () => {
       try {
-        const res = await axios.get("/store", {
+        const res = await axios.get<Store[]>("/store", {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         setStores(res.data || []);
-        if (session.user.role === "ADMIN" && "storeId" in session.user) {
-          const userStore = res.data.find((store: Store) => store.id === (session.user as any).storeId);
+        if (user?.role === "ADMIN" && user?.storeId) {
+          const userStore = res.data.find((store) => store.id === user.storeId);
           if (userStore) setStoreId(userStore.id);
         }
       } catch (err) {
@@ -64,7 +87,7 @@ export default function AddDiscountModal({
     };
 
     fetchStores();
-  }, [isOpen, session]);
+  }, [isOpen, session, user]);
 
   // Fetch produk berdasarkan storeId
   useEffect(() => {
@@ -73,7 +96,7 @@ export default function AddDiscountModal({
 
     const fetchProductsByStore = async () => {
       try {
-        const res = await axios.get(`/product/store/${storeId}`, {
+        const res = await axios.get<Product[]>(`/product/store/${storeId}`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         setProducts(res.data || []);
@@ -90,7 +113,7 @@ export default function AddDiscountModal({
     setError(null);
 
     try {
-      const res = await axios.post(
+      const res = await axios.post<Discount>(
         "/discounts",
         {
           name,
@@ -100,7 +123,7 @@ export default function AddDiscountModal({
           startDate,
           endDate,
           productId: selectedProduct,
-          storeId: storeId || (session?.user && (session.user as any).storeId),
+          storeId: storeId || user?.storeId,
         },
         {
           headers: {
@@ -112,9 +135,7 @@ export default function AddDiscountModal({
       onDiscountAdded(res.data);
       onClose();
       resetForm();
-    } catch (err: any) {
-      console.error(err);
-      setError(err.response?.data?.error || "Gagal menambahkan diskon.");
+        } catch {
     } finally {
       setLoading(false);
     }
@@ -132,14 +153,23 @@ export default function AddDiscountModal({
   if (!isOpen) return null;
 
   return (
-    <Dialog open={isOpen} onClose={onClose} className="fixed z-50 inset-0 overflow-y-auto">
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      className="fixed z-50 inset-0 overflow-y-auto"
+    >
       <div className="flex items-center justify-center min-h-screen px-4">
         <Dialog.Panel className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg relative">
-          <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+          >
             <X className="h-5 w-5" />
           </button>
 
-          <Dialog.Title className="text-xl font-bold mb-4">Tambah Diskon</Dialog.Title>
+          <Dialog.Title className="text-xl font-bold mb-4">
+            Tambah Diskon
+          </Dialog.Title>
 
           <div className="space-y-4 max-h-[80vh] overflow-y-auto">
             <input
@@ -153,7 +183,14 @@ export default function AddDiscountModal({
             <select
               className="w-full border px-3 py-2 rounded"
               value={type}
-              onChange={(e) => setType(e.target.value as any)}
+              onChange={(e) =>
+                setType(
+                  e.target.value as
+                    | "MANUAL"
+                    | "MIN_PURCHASE"
+                    | "BUY_ONE_GET_ONE"
+                )
+              }
             >
               <option value="MANUAL">Manual</option>
               <option value="MIN_PURCHASE">Minimal Pembelian</option>

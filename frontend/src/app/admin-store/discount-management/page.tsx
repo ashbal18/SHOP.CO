@@ -11,8 +11,6 @@ import AddDiscountModal from "./modal/AddDiscountModal";
 import EditDiscountModal from "./modal/EditDiscountModal"; 
 import DeleteConfirmModal from "./modal/DeleteConfirmModal";
 
-
-
 interface Discount {
   id: string;
   name: string;
@@ -28,6 +26,14 @@ interface Product {
   id: string;
   name: string;
   price: number;
+}
+
+interface AxiosError {
+  response?: {
+    data?: {
+      error?: string;
+    };
+  };
 }
 
 function isDiscountActive(endDate: string): boolean {
@@ -110,8 +116,9 @@ export default function DiscountManagementPage() {
       });
 
       setProductMap(map);
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Gagal mengambil data diskon.");
+    } catch (err) {
+      const error = err as AxiosError;
+      setError(error.response?.data?.error || "Gagal mengambil data diskon.");
     } finally {
       setIsLoading(false);
     }
@@ -160,7 +167,8 @@ export default function DiscountManagementPage() {
         },
       });
       fetchDiscounts();
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as AxiosError;
       alert(error?.response?.data?.error || "Gagal menghapus diskon.");
     }
   };
@@ -308,7 +316,10 @@ export default function DiscountManagementPage() {
       {showEditModal && selectedDiscount && (
         <EditDiscountModal
           isOpen={showEditModal}
-          discount={selectedDiscount}
+          discount={{
+            ...selectedDiscount,
+            productId: selectedDiscount.productId ?? "",
+          }}
           onClose={() => setShowEditModal(false)}
           onDiscountUpdated={() => {
             fetchDiscounts();

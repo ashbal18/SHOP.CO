@@ -46,32 +46,37 @@ export default function AdminStorePage() {
       setError(null);
 
       try {
-        const res = await axios.get("/store-admins", {
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`,
-          },
-        });
+      const res = await axios.get("/store-admins", {
+        headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        },
+      });
 
-        const currentUserEmail = session.user?.email;
-        const adminsFromApi: AdminStore[] = res.data.admins;
+      const currentUserEmail = session.user?.email;
+      const adminsFromApi: AdminStore[] = res.data.admins;
 
-        // Filter admins yang sesuai dengan user yang login (berdasarkan email)
-        const filteredAdmins = adminsFromApi.filter(
-          (admin) =>
-            (Array.isArray(admin.roles)
-              ? admin.roles.includes("ADMIN") || admin.roles.includes("SUPER_ADMIN")
-              : admin.roles === "ADMIN" || admin.roles === "SUPER_ADMIN") &&
-            admin.store !== null &&
-            admin.email === currentUserEmail
-        );
+      // Filter admins yang sesuai dengan user yang login (berdasarkan email)
+      const filteredAdmins = adminsFromApi.filter(
+        (admin) =>
+        (Array.isArray(admin.roles)
+          ? admin.roles.includes("ADMIN") || admin.roles.includes("SUPER_ADMIN")
+          : admin.roles === "ADMIN" || admin.roles === "SUPER_ADMIN") &&
+        admin.store !== null &&
+        admin.email === currentUserEmail
+      );
 
-        setAdmins(filteredAdmins);
-      } catch (err: any) {
+      setAdmins(filteredAdmins);
+      } catch (err) {
+      if (err && typeof err === "object" && "response" in err) {
         setError(
-          err.response?.data?.message || err.message || "Terjadi kesalahan saat mengambil data."
+        // @ts-expect-error: err.response might not be typed
+        err.response?.data?.message || (err as Error).message || "Terjadi kesalahan saat mengambil data."
         );
+      } else {
+        setError((err as Error).message || "Terjadi kesalahan saat mengambil data.");
+      }
       } finally {
-        setIsLoading(false);
+      setIsLoading(false);
       }
     };
 

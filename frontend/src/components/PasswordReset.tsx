@@ -7,6 +7,7 @@ import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import Image from "next/image";
 import { toast } from "react-toastify";
 import axios from "@/lib/axios";
+import Link from "next/link";
 
 // Validation schema using Yup
 const ResetPasswordSchema = yup.object().shape({
@@ -157,9 +158,9 @@ export default function ResetPasswordVerification() {
                 {/* Register Link */}
                 <div className="text-center mt-4">
                   <span className="text-sm text-gray-500">Remembered your password? </span>
-                  <a href="/login" className="text-blue-500 hover:underline">
+                  <Link href="/login" className="text-blue-500 hover:underline">
                     Login here
-                  </a>
+                  </Link>
                 </div>
               </Form>
             );

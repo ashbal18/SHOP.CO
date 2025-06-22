@@ -34,16 +34,12 @@ interface Product {
   };
 }
 
-const availableColors = ["#4B4A40", "#2C2D3C", "#3D4C48"];
-const availableSizes = ["Small", "Medium", "Large", "X-Large"];
 
 export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string>("");
-  const [selectedColor, setSelectedColor] = useState<string>(availableColors[0]);
-  const [selectedSize, setSelectedSize] = useState<string>("Large");
   const [quantity, setQuantity] = useState<number>(1);
 
   const { id } = useParams();
@@ -178,8 +174,6 @@ export default function ProductDetailPage() {
                   price: product.finalPrice ?? product.price,
                   imageUrl: selectedImage,
                   quantity,
-                  color: selectedColor,
-                  size: selectedSize,
                   storeId: product.store?.id ?? "",
                   weight: product.weight ?? 1000, 
                   originCityId: product.store.city_id, 

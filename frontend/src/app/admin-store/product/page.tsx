@@ -59,15 +59,20 @@ export default function StoreProductPage() {
       try {
         const response = await axios.get("/product", {
           headers: {
-            Authorization: `Bearer ${session.accessToken}`,
+        Authorization: `Bearer ${session.accessToken}`,
           },
         });
 
         setProducts(response.data);
-      } catch (err: any) {
-        setError(
-          err.response?.data?.message || err.message || "Gagal mengambil data produk."
-        );
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(
+        // @ts-expect-error: err might have response property from axios
+        err.response?.data?.message || err.message || "Gagal mengambil data produk."
+          );
+        } else {
+          setError("Gagal mengambil data produk.");
+        }
       } finally {
         setIsLoading(false);
       }

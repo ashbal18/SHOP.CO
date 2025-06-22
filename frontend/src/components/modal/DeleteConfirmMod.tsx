@@ -44,9 +44,8 @@ export default function DeleteStoreAdminModal({
       });
       onSuccess?.();
       setIsOpen(false);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Gagal menghapus Store Admin:", err);
-      setError(err.response?.data?.message || "Terjadi kesalahan saat menghapus Store Admin.");
     } finally {
       setLoading(false);
     }

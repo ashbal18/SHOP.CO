@@ -5,10 +5,11 @@ import { useState } from "react";
 import * as yup from "yup";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import Image from "next/image";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 import axios from "@/lib/axios";
 import { toast } from "react-toastify";
 import { FcGoogle } from "react-icons/fc";
+import Link from "next/link";
 
 const LoginSchema = yup.object().shape({
   email: yup.string().email("Format email salah").required("email wajib diisi"),
@@ -183,11 +184,11 @@ export default function FormLogin() {
                 </button>
 
                 <div className="text-center mt-4">
-                  <span className="text-sm text-gray-500">Don't have an account? </span>
-                  <a href="/register" className="text-blue-500 hover:underline">Register here</a>
+                  <span className="text-sm text-gray-500">Dont have an account? </span>
+                  <Link href="/register" className="text-blue-500 hover:underline">Register here</Link>
                 </div>
                 <div className="text-center mt-4">
-                  <a href="/resetpassreq" className="text-blue-500 hover:underline">Forget Password</a>
+                  <Link href="/resetpassreq" className="text-blue-500 hover:underline">Forget Password</Link>
                 </div>
               </Form>
             );

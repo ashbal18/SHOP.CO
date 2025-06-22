@@ -51,8 +51,8 @@ export default function EditCategoryModal({
 
       onUpdate(res.data);
       onClose();
-    } catch (error: any) {
-      alert(error.response?.data?.message || "Gagal mengupdate kategori");
+    } catch (error) {
+      console.log("Error updating category:", error);
     } finally {
       setLoading(false);
     }

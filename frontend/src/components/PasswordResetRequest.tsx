@@ -6,6 +6,7 @@ import * as yup from "yup";
 import Image from "next/image";
 import axios from "@/lib/axios";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 
 // Validation schema using Yup
@@ -18,7 +19,7 @@ interface IResetPasswordForm {
 }
 
 export default function ResetPasswordRequest() {
-  const [showPassword, setShowPassword] = useState(false);
+  const [] = useState(false);
 
   // Initial values for the form
   const initialValues: IResetPasswordForm = {
@@ -98,9 +99,9 @@ export default function ResetPasswordRequest() {
                 </div>
                 {/* Register Link */}
                 <div className="text-center mt-4">
-                  <a href="/login" className="text-blue-500 hover:underline">
+                  <Link href="/login" className="text-blue-500 hover:underline">
                     Login here
-                  </a>
+                  </Link>
                 </div>
               </Form>
             );

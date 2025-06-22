@@ -39,6 +39,20 @@ interface Reward {
   };
 }
 
+interface ShippingOption {
+  shipping_name: string;
+  service_name: string;
+  etd: string;
+  shipping_cost_net: number;
+  id?: string;
+}
+
+interface ShippingData {
+  calculate_reguler?: ShippingOption[];
+  calculate_cargo?: ShippingOption[];
+  calculate_instant?: ShippingOption[];
+}
+
 export default function CheckoutPage() {
   const { data: session, status } = useSession();
   const [product, setProduct] = useState<CheckoutProduct | null>(null);
@@ -49,8 +63,8 @@ export default function CheckoutPage() {
   const [useVoucher, setUseVoucher] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [shippingData, setShippingData] = useState<any>(null);
-  const [selectedShippingOption, setSelectedShippingOption] = useState<any>(null);
+  const [shippingData, setShippingData] = useState<ShippingData | null>(null);
+  const [selectedShippingOption, setSelectedShippingOption] = useState<ShippingOption & { id: string } | null>(null);
   const [shippingCost, setShippingCost] = useState<number>(0);
   const [originCityId, setOriginCityId] = useState<string | null>(null);
 
@@ -102,7 +116,7 @@ export default function CheckoutPage() {
           item_value: product.price,
         },
       });
-      setShippingData(res.data.data);
+      setShippingData(res.data.data as ShippingData);
     } catch (err) {
       console.error("❌ Gagal hitung ongkir:", err);
       setShippingData(null);
@@ -278,14 +292,14 @@ export default function CheckoutPage() {
 
       {/* Pengiriman */}
       {shippingData &&
-        ["calculate_reguler", "calculate_cargo", "calculate_instant"].map((type) => {
+        (["calculate_reguler", "calculate_cargo", "calculate_instant"] as (keyof ShippingData)[]).map((type) => {
           const options = shippingData[type] || [];
           if (!Array.isArray(options) || options.length === 0) return null;
 
           return (
             <div key={type} className="mb-4">
               <p className="font-semibold capitalize">{type.replace("calculate_", "")}</p>
-              {options.map((option: any, i: number) => {
+              {options.map((option, i) => {
                 const id = `${type}-${i}`;
                 return (
                   <label

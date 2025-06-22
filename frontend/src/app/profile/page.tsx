@@ -84,9 +84,9 @@ export default function ProfilePage() {
       } else {
         setMessage(res.data.message || "Gagal memperbarui profil.");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      setMessage(error.response?.data?.message || "Terjadi kesalahan saat memperbarui profil.");
+      
     } finally {
       setIsSubmitting(false);
     }

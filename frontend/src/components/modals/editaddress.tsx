@@ -30,7 +30,6 @@ export default function EditAddressModal({
   token,
   onUpdate,
 }: EditAddressModalProps) {
-  // State pakai camelCase, mapping ke snake_case saat kirim
   const [addressName, setAddressName] = useState("");
   const [address, setAddress] = useState("");
   const [subdistrict, setSubdistrict] = useState("");
@@ -89,9 +88,9 @@ export default function EditAddressModal({
 
       onUpdate(response.data);
       onClose();
-    } catch (err: any) {
-      console.error("Error saat update alamat:", err.response || err);
-      setError(err.response?.data?.message || "Terjadi kesalahan saat memperbarui alamat.");
+    } catch (err) {
+      console.error("Error saat update alamat:", err);
+      
     } finally {
       setLoading(false);
     }

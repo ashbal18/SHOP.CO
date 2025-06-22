@@ -39,13 +39,15 @@ export default function TopSellingSection() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [stores, setStores] = useState<Store[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
 
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
 
   // State untuk filter kategori
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,9 +68,8 @@ export default function TopSellingSection() {
         setProducts(prodRes.data);
         setCategories(catRes.data);
         setStores(storeRes.data);
-      } catch (err: any) {
-        setError("Gagal memuat data");
-        console.error(err);
+      } catch {
+        console.error("Error fetching data:", error);
       } finally {
         setIsLoading(false);
       }
@@ -117,7 +118,9 @@ export default function TopSellingSection() {
         <main className="flex-1 p-8 bg-white overflow-auto">
           <div className="max-w-7xl mx-auto">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-extrabold text-gray-900">TOP SELLING</h2>
+              <h2 className="text-3xl font-extrabold text-gray-900">
+                TOP SELLING
+              </h2>
               <div className="space-x-4">
                 <button
                   onClick={() => setIsAddCategoryOpen(true)}
@@ -166,7 +169,9 @@ export default function TopSellingSection() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mt-8">
               {filteredProducts.length === 0 ? (
-                <p className="text-center col-span-full">Tidak ada produk untuk kategori ini.</p>
+                <p className="text-center col-span-full">
+                  Tidak ada produk untuk kategori ini.
+                </p>
               ) : (
                 filteredProducts.map((product) => (
                   <div key={product.id} className="border rounded-lg p-4">
@@ -181,7 +186,9 @@ export default function TopSellingSection() {
                       <h3 className="font-semibold text-lg">{product.name}</h3>
                       <div className="flex items-center mt-1">
                         <span className="text-yellow-500">⭐⭐⭐⭐⭐</span>
-                        <span className="ml-2 text-gray-500">({product.rating || 0})</span>
+                        <span className="ml-2 text-gray-500">
+                          ({product.rating || 0})
+                        </span>
                       </div>
                       <p className="mt-2 text-xl font-semibold text-gray-800">
                         ${product.price.toLocaleString()}

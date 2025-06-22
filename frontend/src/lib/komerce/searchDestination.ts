@@ -25,8 +25,8 @@ export const searchDestination = async (
     );
 
     return response.data.data as Destination[];
-  } catch (error: any) {
-    console.error("❌ Gagal mengambil data destinasi:", error.message);
+  } catch (err) {
+    console.error("❌ Gagal mengambil data destinasi:", err);
     return [];
   }
 };

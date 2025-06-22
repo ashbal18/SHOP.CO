@@ -6,7 +6,9 @@ import Footer from "@/components/navbar/navbar/footer";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import axios from "@/lib/axios";
-import EditAddressModal from "./editAddress/page";
+
+import Link from "next/link";
+import EditAddressModal from "@/components/modals/editaddress";
 
 export type Address = {
   address_id: string;
@@ -118,12 +120,12 @@ export default function AddressList() {
           <div className="flex-1">
             <h1 className="text-3xl font-bold mb-8">Daftar alamat</h1>
 
-            <a
+            <Link
               href="/profile/address/addAddress"
               className="mb-6 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
             >
               Tambah Alamat
-            </a>
+            </Link>
 
             {loading ? (
               <p>Loading alamat...</p>
