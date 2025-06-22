@@ -10,7 +10,7 @@ import axios from "@/lib/axios";
 import { toast } from "react-toastify";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
-import { Link } from "lucide-react";
+import Link from "next/link";
 
 // Validasi schema menggunakan Yup
 const RegisterSchema = yup.object().shape({
