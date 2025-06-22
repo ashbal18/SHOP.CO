@@ -13,7 +13,10 @@ import Link from "next/link";
 
 const LoginSchema = yup.object().shape({
   email: yup.string().email("Format email salah").required("email wajib diisi"),
-  password: yup.string().min(6, "Minimal 6 karakter").required("password wajib diisi"),
+  password: yup
+    .string()
+    .min(6, "Minimal 6 karakter")
+    .required("password wajib diisi"),
 });
 
 interface ILoginForm {
@@ -38,7 +41,7 @@ export default function FormLogin() {
       const user = data.data;
 
       await signIn("credentials", {
-        redirectTo: "/",
+        callbackUrl: "/", // ⬅️ GANTI redirectTo jadi callbackUrl
         id: user.id,
         email: user.email,
         password: value.password,
@@ -69,7 +72,9 @@ export default function FormLogin() {
       }
 
       // Ambil session Google yang sudah login
-      const session = await fetch("/api/auth/session").then((res) => res.json());
+      const session = await fetch("/api/auth/session").then((res) =>
+        res.json()
+      );
 
       const googleUser = session?.user;
       if (!googleUser || !googleUser.email || !googleUser.name) {
@@ -84,14 +89,13 @@ export default function FormLogin() {
 
       const user = data.data;
 
-
       await signOut({ redirect: false });
 
       await signIn("credentials", {
-        redirectTo: "/",
+        callbackUrl: "/", // ⬅️ GANTI redirectTo jadi callbackUrl
         id: user.id,
         email: user.email,
-        password: user.generatedPassword, 
+        password: user.generatedPassword,
         name: user.name,
         avatar: user.avatar ?? "",
         referralCode: user.referralCode ?? "",
@@ -112,7 +116,8 @@ export default function FormLogin() {
       <div className="lg:w-1/2 bg-gradient-to-r from-gray-300 p-10 flex flex-col justify-center items-center text-white">
         <h1 className="text-4xl text-black font-semibold mb-4">Welcome back</h1>
         <p className="text-lg text-center mb-8 text-black">
-          Temukan berbagai koleksi baju terbaru di toko baju Shop.co, belanja dengan mudah dan aman, dan dapatkan penawaran spesial setiap hari!
+          Temukan berbagai koleksi baju terbaru di toko baju Shop.co, belanja
+          dengan mudah dan aman, dan dapatkan penawaran spesial setiap hari!
         </p>
         <Image src="/main1.png" alt="Logo" width={600} height={200} />
       </div>
@@ -128,7 +133,12 @@ export default function FormLogin() {
             return (
               <Form className="flex flex-col border px-10 pb-5 pt-5 border-gray-500 w-full max-w-sm">
                 <div className="flex justify-center mb-6">
-                  <Image src="/logo.png" alt="Logo IG" width={150} height={75} />
+                  <Image
+                    src="/logo.png"
+                    alt="Logo IG"
+                    width={150}
+                    height={75}
+                  />
                 </div>
 
                 <Field
@@ -153,11 +163,17 @@ export default function FormLogin() {
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? <AiFillEyeInvisible size={20} /> : <AiFillEye size={20} />}
+                    {showPassword ? (
+                      <AiFillEyeInvisible size={20} />
+                    ) : (
+                      <AiFillEye size={20} />
+                    )}
                   </button>
                 </div>
                 {touched.password && errors.password && (
-                  <div className="text-red-500 text-[12px]">{errors.password}</div>
+                  <div className="text-red-500 text-[12px]">
+                    {errors.password}
+                  </div>
                 )}
 
                 <button
@@ -184,11 +200,23 @@ export default function FormLogin() {
                 </button>
 
                 <div className="text-center mt-4">
-                  <span className="text-sm text-gray-500">Dont have an account? </span>
-                  <Link href="/register" className="text-blue-500 hover:underline">Register here</Link>
+                  <span className="text-sm text-gray-500">
+                    Dont have an account?{" "}
+                  </span>
+                  <Link
+                    href="/register"
+                    className="text-blue-500 hover:underline"
+                  >
+                    Register here
+                  </Link>
                 </div>
                 <div className="text-center mt-4">
-                  <Link href="/resetpassreq" className="text-blue-500 hover:underline">Forget Password</Link>
+                  <Link
+                    href="/resetpassreq"
+                    className="text-blue-500 hover:underline"
+                  >
+                    Forget Password
+                  </Link>
                 </div>
               </Form>
             );
