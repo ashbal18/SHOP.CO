@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "./generated/client"
+  provider      = "prisma-client-js"
+  output        = "./generated/client"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
@@ -69,8 +70,7 @@ model Store {
   latitude  Float?
   longitude Float?
   discount  Discount[]     @relation("StoreDiscounts")
-  city_id   Int?
-  city      City?          @relation(fields: [city_id], references: [id])
+  city_id   String?
   createdAt DateTime       @default(now())
 }
 
@@ -235,5 +235,4 @@ model City {
   name        String
   province_id Int
   province    Province @relation(fields: [province_id], references: [id])
-  stores      Store[]
 }
