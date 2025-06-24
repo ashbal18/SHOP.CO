@@ -83,7 +83,7 @@ export class TransactionController {
         description: `Pembayaran Order #${order.id}`,
         currency: "IDR",
         reminderTime: 1,
-        successRedirectUrl: "https://shop-co-weld-three.vercel.app/",
+        successRedirectUrl: "https://shop-co-frontend-one.vercel.app/",
       };
 
       const invoice = await xenditClient.Invoice.createInvoice({ data: invoiceData });
