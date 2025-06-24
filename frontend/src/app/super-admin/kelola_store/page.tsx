@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import axios from "@/lib/axios";
 import { useSession } from "next-auth/react";
 import EditStoreModal from "@/components/modal/editstore";
+import AddStoreModal from "@/components/modal/addstore";
+
 
 interface Store {
   id: string;
@@ -27,7 +29,7 @@ export default function SuperAdminKelolaToko() {
   const { data: session, status } = useSession();
   const [stores, setStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
-  // const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [storeToEdit, setStoreToEdit] = useState<Store | null>(null);
 
@@ -54,9 +56,9 @@ export default function SuperAdminKelolaToko() {
     }
   }, [session]);
 
-  // const handleAddStore = (newStore: Store) => {
-  //   setStores((prev) => [...prev, newStore]);
-  // };
+  const handleAddStore = (newStore: Store) => {
+    setStores((prev) => [...prev, newStore]);
+  };
 
   const handleDeleteStore = async (id: string) => {
     if (!confirm("Apakah Anda yakin ingin menghapus toko ini?")) return;
@@ -126,7 +128,7 @@ export default function SuperAdminKelolaToko() {
               Daftar Toko
             </h1>
             <button
-              // onClick={() => setIsAddModalOpen(true)}
+              onClick={() => setIsAddModalOpen(true)}
               className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition duration-300"
             >
               <svg
@@ -162,7 +164,6 @@ export default function SuperAdminKelolaToko() {
                     <th className="px-4 py-2 border">Nama Toko</th>
                     <th className="px-4 py-2 border">Nama Admin</th>
                     <th className="px-4 py-2 border">Alamat</th>
-                    <th className="px-4 py-2 border">Kota</th>
                     <th className="px-4 py-2 border">Aksi</th>
                   </tr>
                 </thead>
@@ -173,11 +174,6 @@ export default function SuperAdminKelolaToko() {
                       <td className="px-4 py-2 border">{store.name}</td>
                       <td className="px-4 py-2 border">{store.admin?.name ?? "-"}</td>
                       <td className="px-4 py-2 border">{store.address}</td>
-                      <td className="px-4 py-2 border">
-                        {store.city
-                          ? `${store.city.city_name}, ${store.city.province_name}`
-                          : "-"}
-                      </td>
                       <td className="px-4 py-2 border text-center space-x-2">
                         <button
                           onClick={() => handleEditClick(store)}
@@ -199,12 +195,12 @@ export default function SuperAdminKelolaToko() {
             </div>
           )}
 
-          {/* <AddStoreModal
+          <AddStoreModal
             open={isAddModalOpen}
             onClose={() => setIsAddModalOpen(false)}
             onAdd={handleAddStore}
             token={session?.accessToken ?? ""}
-          /> */}
+          />
 
           <EditStoreModal
             open={isEditModalOpen}

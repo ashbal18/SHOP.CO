@@ -20,12 +20,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.7.0
- * Query Engine version: 3cff47a7f5d65c3ea74883f1d736e41d68ce91ed
+ * Prisma Client JS version: 6.10.1
+ * Query Engine version: 9b628578b3b7cae625e8c927178f15a170e74a9c
  */
 Prisma.prismaVersion = {
-  client: "6.7.0",
-  engine: "3cff47a7f5d65c3ea74883f1d736e41d68ce91ed"
+  client: "6.10.1",
+  engine: "9b628578b3b7cae625e8c927178f15a170e74a9c"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -214,6 +214,16 @@ exports.Prisma.OrderScalarFieldEnum = {
   confirmedAt: 'confirmedAt'
 };
 
+exports.Prisma.StockHistoryScalarFieldEnum = {
+  id: 'id',
+  storeId: 'storeId',
+  productId: 'productId',
+  type: 'type',
+  quantity: 'quantity',
+  description: 'description',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.WarehouseScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -309,6 +319,12 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   EXPIRED: 'EXPIRED'
 };
 
+exports.StockChangeType = exports.$Enums.StockChangeType = {
+  ADD: 'ADD',
+  REMOVE: 'REMOVE',
+  ADJUST: 'ADJUST'
+};
+
 exports.DiscountType = exports.$Enums.DiscountType = {
   MANUAL: 'MANUAL',
   MIN_PURCHASE: 'MIN_PURCHASE',
@@ -324,6 +340,7 @@ exports.Prisma.ModelName = {
   ProductStock: 'ProductStock',
   CartItem: 'CartItem',
   Order: 'Order',
+  StockHistory: 'StockHistory',
   Warehouse: 'Warehouse',
   OrderItem: 'OrderItem',
   Poin: 'Poin',

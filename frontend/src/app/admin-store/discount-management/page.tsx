@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 import axios from "@/lib/axios";
 import { Loader2, PlusCircle } from "lucide-react";
 import AddDiscountModal from "./modal/AddDiscountModal";
-import EditDiscountModal from "./modal/EditDiscountModal"; 
+import EditDiscountModal from "./modal/EditDiscountModal";
 import DeleteConfirmModal from "./modal/DeleteConfirmModal";
 
 interface Discount {
@@ -20,6 +20,10 @@ interface Discount {
   productId?: string;
   startDate: string;
   endDate: string;
+  minPurchase?: number | null;
+  maxDiscount?: number | null;
+  buyQuantity?: number | null;
+  getQuantity?: number | null;
 }
 
 interface Product {
@@ -58,13 +62,9 @@ export default function DiscountManagementPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedDiscount, setSelectedDiscount] = useState<Discount | null>(
-    null
-  );
+  const [selectedDiscount, setSelectedDiscount] = useState<Discount | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [discountToDelete, setDiscountToDelete] = useState<Discount | null>(
-    null
-  );
+  const [discountToDelete, setDiscountToDelete] = useState<Discount | null>(null);
 
   const fetchDiscounts = async () => {
     if (!session?.accessToken || !session?.user?.id) {
@@ -74,20 +74,15 @@ export default function DiscountManagementPage() {
 
     setIsLoading(true);
     try {
-      const { data: discountData } = await axios.get(
-        `/discounts/store/${session.user.storeId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`,
-          },
-        }
-      );
+      const { data: discountData } = await axios.get(`/discounts/store/${session.user.storeId}`, {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      });
 
       setDiscounts(discountData);
 
-      const productIds = Array.from(
-        new Set(discountData.map((d: Discount) => d.productId).filter(Boolean))
-      );
+      const productIds = Array.from(new Set(discountData.map((d: Discount) => d.productId).filter(Boolean)));
 
       const productResponses: Product[] = await Promise.all(
         productIds.map((id) =>
@@ -131,18 +126,14 @@ export default function DiscountManagementPage() {
   }, [session, loadingSession]);
 
   const calculateFinalPrice = (discount: Discount): string => {
-    if (!discount.productId) return "-";
+    if (!discount.productId || !discount.amount || isNaN(discount.amount)) return "-";
     const product = productMap[discount.productId];
     if (!product || !product.price) return "-";
 
     const originalPrice = product.price;
-    let finalPrice = originalPrice;
-
-    if (discount.isPercentage) {
-      finalPrice = originalPrice - (originalPrice * discount.amount) / 100;
-    } else {
-      finalPrice = originalPrice - discount.amount;
-    }
+    let finalPrice = discount.isPercentage
+      ? originalPrice - (originalPrice * discount.amount) / 100
+      : originalPrice - discount.amount;
 
     return `Rp ${Math.max(finalPrice, 0).toLocaleString("id-ID")}`;
   };
@@ -173,22 +164,6 @@ export default function DiscountManagementPage() {
     }
   };
 
-  if (loadingSession) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        Loading session...
-      </div>
-    );
-  }
-
-  if (!session) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        Anda harus login sebagai Store Admin
-      </div>
-    );
-  }
-
   return (
     <>
       <Navbar />
@@ -198,9 +173,7 @@ export default function DiscountManagementPage() {
         </div>
         <main className="flex-1 p-6 bg-gray-50">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-800">
-              Manajemen Diskon
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-800">Manajemen Diskon</h1>
             <button
               onClick={() => setShowModal(true)}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg"
@@ -245,39 +218,45 @@ export default function DiscountManagementPage() {
                       <td className="py-3 px-4 border">{discount.name}</td>
                       <td className="py-3 px-4 border">{discount.type}</td>
                       <td className="py-3 px-4 border">
-                        {discount.isPercentage
-                          ? `${discount.amount}%`
-                          : `Rp ${discount.amount.toLocaleString("id-ID")}`}
+                        {discount.type === "MIN_PURCHASE" ? (
+                          <>
+                            {discount.isPercentage
+                              ? `${discount.amount}%`
+                              : `Rp ${discount.amount.toLocaleString("id-ID")}`}
+                            <div className="text-xs text-gray-500">
+                              Min: Rp {discount.minPurchase?.toLocaleString("id-ID")}
+                              <br />Max: Rp {discount.maxDiscount?.toLocaleString("id-ID")}
+                            </div>
+                          </>
+                        ) : discount.type === "BUY_ONE_GET_ONE" ? (
+                          <>
+                            <div>
+                              Beli {discount.buyQuantity} Gratis {discount.getQuantity}
+                            </div>
+                          </>
+                        ) : discount.isPercentage ? (
+                          `${discount.amount}%`
+                        ) : (
+                          `Rp ${discount.amount.toLocaleString("id-ID")}`
+                        )}
                       </td>
                       <td className="py-3 px-4 border">
-                        {discount.productId
-                          ? productMap[discount.productId]?.name || "..."
+                        {discount.productId ? productMap[discount.productId]?.name || "..." : "-"}
+                      </td>
+                      <td className="py-3 px-4 border">
+                        {discount.productId && productMap[discount.productId]?.price
+                          ? `Rp ${productMap[discount.productId].price.toLocaleString("id-ID")}`
                           : "-"}
                       </td>
+                      <td className="py-3 px-4 border">{calculateFinalPrice(discount)}</td>
                       <td className="py-3 px-4 border">
-                        {discount.productId &&
-                        productMap[discount.productId]?.price
-                          ? `Rp ${productMap[
-                              discount.productId
-                            ].price.toLocaleString("id-ID")}`
-                          : "-"}
-                      </td>
-                      <td className="py-3 px-4 border">
-                        {calculateFinalPrice(discount)}
-                      </td>
-                      <td className="py-3 px-4 border">
-                        {formatDate(discount.startDate)} -{" "}
-                        {formatDate(discount.endDate)}
+                        {formatDate(discount.startDate)} - {formatDate(discount.endDate)}
                       </td>
                       <td className="py-3 px-4 border">
                         {isDiscountActive(discount.endDate) ? (
-                          <span className="text-green-600 font-semibold">
-                            Aktif
-                          </span>
+                          <span className="text-green-600 font-semibold">Aktif</span>
                         ) : (
-                          <span className="text-red-600 font-semibold">
-                            Kedaluwarsa
-                          </span>
+                          <span className="text-red-600 font-semibold">Kedaluwarsa</span>
                         )}
                       </td>
                       <td className="py-3 px-4 border space-x-2">
@@ -319,6 +298,10 @@ export default function DiscountManagementPage() {
           discount={{
             ...selectedDiscount,
             productId: selectedDiscount.productId ?? "",
+            minPurchase: selectedDiscount.minPurchase ?? null,
+            maxDiscount: selectedDiscount.maxDiscount ?? null,
+            buyQuantity: selectedDiscount.buyQuantity ?? null,
+            getQuantity: selectedDiscount.getQuantity ?? null,
           }}
           onClose={() => setShowEditModal(false)}
           onDiscountUpdated={() => {

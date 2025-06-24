@@ -60,7 +60,6 @@ export default function EditDiscountModal({
   const [type, setType] = useState<DiscountType>("MANUAL");
   const [productId, setProductId] = useState("");
 
-  // Optional fields based on discount type
   const [minPurchase, setMinPurchase] = useState<number | null>(null);
   const [maxDiscount, setMaxDiscount] = useState<number | null>(null);
   const [buyQuantity, setBuyQuantity] = useState<number | null>(null);
@@ -85,7 +84,30 @@ export default function EditDiscountModal({
     }
   }, [discount]);
 
+  // Reset field opsional saat type berubah
+  useEffect(() => {
+    setMinPurchase(null);
+    setMaxDiscount(null);
+    setBuyQuantity(null);
+    setGetQuantity(null);
+  }, [type]);
+
   const handleUpdate = async () => {
+    if (!name || !startDate || !endDate || !productId) {
+      alert("Mohon lengkapi semua data utama.");
+      return;
+    }
+
+    if (type === "MIN_PURCHASE" && (minPurchase == null || maxDiscount == null)) {
+      alert("Isi minimal pembelian dan maksimum diskon.");
+      return;
+    }
+
+    if (type === "BUY_ONE_GET_ONE" && (buyQuantity == null || getQuantity == null)) {
+      alert("Isi jumlah beli dan jumlah gratis.");
+      return;
+    }
+
     setLoading(true);
     try {
       const payload: DiscountPayload = {
@@ -118,6 +140,7 @@ export default function EditDiscountModal({
       onClose();
     } catch (error) {
       console.error("Gagal update diskon", error);
+      alert("Terjadi kesalahan saat memperbarui diskon.");
     } finally {
       setLoading(false);
     }
@@ -127,7 +150,6 @@ export default function EditDiscountModal({
     <Dialog open={isOpen} onClose={onClose} className="fixed z-50 inset-0 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen px-4">
         <div className="fixed inset-0 bg-black opacity-30" aria-hidden="true" />
-
         <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6 relative z-10">
           <button onClick={onClose} className="absolute top-3 right-3 text-gray-500 hover:text-gray-800">
             <X className="h-5 w-5" />
@@ -144,6 +166,19 @@ export default function EditDiscountModal({
                 onChange={(e) => setName(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">Tipe Diskon</label>
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value as DiscountType)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1"
+              >
+                <option value="MANUAL">Manual</option>
+                <option value="MIN_PURCHASE">Minimal Pembelian</option>
+                <option value="BUY_ONE_GET_ONE">Beli Satu Gratis Satu</option>
+              </select>
             </div>
 
             <div>
