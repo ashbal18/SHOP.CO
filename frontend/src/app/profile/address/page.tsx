@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import axios from "@/lib/axios";
 
 import Link from "next/link";
-import EditAddressModal from "@/components/modals/editaddress";
+import EditAddressModal from "@/components/editAddressprofilemodal/editaddress";
 
 export type Address = {
   address_id: string;
