@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { SalesReportController } from "../controller/SalesReport.controller";
+
 import { AuthMiddleware } from "../middleware/auth.middleware";
+import { SalesReportController } from "../controller/salesreport.controller";
 
 export class SalesReportRouter {
   private router: Router;
@@ -34,6 +35,25 @@ export class SalesReportRouter {
       this.controller.salesByProduct
     );
 
+    // ✅ STOCK REPORT - Ringkasan stok bulanan semua produk
+    this.router.get(
+      "/sales/stock/summary",
+      this.authMiddleware.verifyToken,
+      this.controller.stockSummary
+    );
+
+    // ✅ STOCK REPORT - Riwayat detail stok per produk
+    this.router.get(
+      "/sales/stock/history",
+      this.authMiddleware.verifyToken,
+      this.controller.salesStockHistory
+    );
+
+    this.router.post(
+      "/stock/remove",
+      this.authMiddleware.verifyToken,
+      this.controller.removeStock
+    );
   }
 
   public getRouter() {

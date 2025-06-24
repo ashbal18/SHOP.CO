@@ -17,7 +17,8 @@ import { RajaOngkirRouter } from "./routers/rajaongkir.router";
 import { TransactionRouter } from "./routers/transaction.router";
 import { ProductRouter2 } from "./routers/product2.router";
 import { userorderRouter } from "./routers/user-order.router";
-import { SalesReportRouter } from "./routers/SalesReport.router";
+import { SalesReportRouter } from "./routers/salesreport.router";
+
 
 
 

@@ -51,6 +51,9 @@ export default function TopSellingSection() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
   useEffect(() => {
     const fetchData = async () => {
       if (!token) return;
@@ -81,6 +84,11 @@ export default function TopSellingSection() {
     fetchData();
   }, [token]);
 
+  // Reset pagination saat filter berubah
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategoryId, selectedStoreId]);
+
   const handleAddCategory = (newCategory: Category) => {
     setCategories((prev) => [...prev, newCategory]);
   };
@@ -99,6 +107,13 @@ export default function TopSellingSection() {
       return matchStore && matchCategory;
     });
   }, [products, selectedCategoryId, selectedStoreId]);
+
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredProducts.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredProducts, currentPage]);
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
   if (status === "loading" || isLoading) {
     return (
@@ -195,10 +210,10 @@ export default function TopSellingSection() {
 
             {/* Produk */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mt-8">
-              {filteredProducts.length === 0 ? (
+              {paginatedProducts.length === 0 ? (
                 <p className="text-center col-span-full">Tidak ada produk untuk filter ini.</p>
               ) : (
-                filteredProducts.map((product) => (
+                paginatedProducts.map((product) => (
                   <div key={product.id} className="border rounded-lg p-4">
                     <Link href={`/detail/${product.id}`}>
                       <img
@@ -237,11 +252,32 @@ export default function TopSellingSection() {
               )}
             </div>
 
-            <div className="mt-8 text-center">
-              <button className="px-6 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition-colors duration-300">
-                View All
-              </button>
-            </div>
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-4 mt-8">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <span>
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) =>
+                      prev < totalPages ? prev + 1 : prev
+                    )
+                  }
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         </main>
       </div>
@@ -253,7 +289,6 @@ export default function TopSellingSection() {
         onClose={() => setIsAddCategoryOpen(false)}
         onAdd={handleAddCategory}
       />
-
       <AddProductModal
         open={isAddProductOpen}
         onClose={() => setIsAddProductOpen(false)}

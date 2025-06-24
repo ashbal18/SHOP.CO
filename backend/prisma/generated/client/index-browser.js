@@ -206,6 +206,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   invoiceUrl: 'invoiceUrl',
   storeId: 'storeId',
   voucherId: 'voucherId',
+  poinId: 'poinId',
   warehouseId: 'warehouseId',
   paymentProof: 'paymentProof',
   createdAt: 'createdAt',
@@ -245,6 +246,7 @@ exports.Prisma.PoinScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   amount: 'amount',
+  used: 'used',
   expiredAt: 'expiredAt',
   createdAt: 'createdAt'
 };

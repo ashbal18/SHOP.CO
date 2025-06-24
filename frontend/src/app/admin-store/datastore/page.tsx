@@ -17,42 +17,59 @@ import {
   Legend,
 } from "recharts";
 
-interface Sale {
-  productId: string;
-  name: string;
-  totalSold: number;
-  totalRevenue: number;
-}
-
-interface CategorySale {
-  category: string;
-  totalSold: number;
-  totalRevenue: number;
-}
-
 const MONTHS = [
   "Januari", "Februari", "Maret", "April", "Mei", "Juni",
   "Juli", "Agustus", "September", "Oktober", "November", "Desember"
 ];
 
+type Sale = {
+  productId: string;
+  name: string;
+  totalSold: number;
+  totalRevenue: number;
+};
+
+type CategorySale = {
+  category: string;
+  totalSold: number;
+  totalRevenue: number;
+};
+
+type StockSummary = {
+  totalAdded: number;
+  totalRemoved: number;
+  stockEnding: number;
+};
+
+type StockHistory = {
+  productId: string;
+  productName: string;
+  type: string;
+  quantity: number;
+  description: string;
+  date: string;
+};
+
 export default function SalesDataPage() {
   const { data: session, status } = useSession();
   const [sales, setSales] = useState<Sale[]>([]);
   const [categorySales, setCategorySales] = useState<CategorySale[]>([]);
+  const [stockSummary, setStockSummary] = useState<StockSummary>({
+    totalAdded: 0,
+    totalRemoved: 0,
+    stockEnding: 0,
+  });
+  const [stockHistory, setStockHistory] = useState<StockHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [year] = useState<number>(2025);
-  const [month, setMonth] = useState<number>(6); // default Juni
+  const [month, setMonth] = useState<number>(6);
 
   useEffect(() => {
-    const fetchSales = async () => {
-      if (!session?.accessToken || !session?.user?.storeId) {
-        console.error("Token atau storeId tidak ditemukan.");
-        return;
-      }
-
+    const fetchData = async () => {
+      if (!session?.accessToken || !session?.user?.storeId) return;
       setLoading(true);
       try {
-        const [productRes, categoryRes] = await Promise.all([
+        const [productRes, categoryRes, stockRes, historyRes] = await Promise.all([
           axios.get(`/report/sales/product`, {
             params: { year, month, storeId: session.user.storeId },
             headers: { Authorization: `Bearer ${session.accessToken}` },
@@ -60,32 +77,32 @@ export default function SalesDataPage() {
           axios.get(`/report/sales/category`, {
             params: { year, month, storeId: session.user.storeId },
             headers: { Authorization: `Bearer ${session.accessToken}` },
-          })
+          }),
+          axios.get(`/report/sales/stock/summary`, {
+            params: { year, month, storeId: session.user.storeId },
+            headers: { Authorization: `Bearer ${session.accessToken}` },
+          }),
+          axios.get(`/report/sales/stock/history`, {
+            params: { year, month, storeId: session.user.storeId },
+            headers: { Authorization: `Bearer ${session.accessToken}` },
+          }),
         ]);
 
         setSales(productRes.data);
         setCategorySales(categoryRes.data);
-      } catch (error: any) {
-        console.error("Gagal fetch sales:", error.response?.data || error.message);
+        setStockSummary(stockRes.data);
+        setStockHistory(historyRes.data);
+      } catch (err) {
+        console.error("Gagal memuat data laporan:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    if (status === "authenticated") {
-      fetchSales();
-    }
+    if (status === "authenticated") fetchData();
   }, [year, month, session, status]);
 
   const totalRevenue = sales.reduce((sum, s) => sum + s.totalRevenue, 0);
-
-  if (status === "loading") {
-    return <div className="p-8 text-center text-lg">Memuat session...</div>;
-  }
-
-  if (!session?.user) {
-    return <div className="p-8 text-center text-red-600">Anda tidak memiliki akses.</div>;
-  }
 
   return (
     <>
@@ -97,7 +114,7 @@ export default function SalesDataPage() {
 
         <main className="flex-1 p-6 bg-gray-50 min-h-screen overflow-auto">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold">Data Penjualan Produk</h1>
+            <h1 className="text-3xl font-bold">Laporan Penjualan & Stok</h1>
             <select
               value={month}
               onChange={(e) => setMonth(parseInt(e.target.value))}
@@ -111,74 +128,86 @@ export default function SalesDataPage() {
             </select>
           </div>
 
-          {/* Tabel Data Produk */}
-          <div className="overflow-x-auto bg-white rounded shadow mb-6">
-            <table className="min-w-full">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="py-2 px-4 border">No</th>
-                  <th className="py-2 px-4 border">Produk</th>
-                  <th className="py-2 px-4 border">Jumlah Terjual</th>
-                  <th className="py-2 px-4 border">Total Pendapatan (Rp)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan={4} className="text-center py-4">Memuat data...</td>
-                  </tr>
-                ) : sales.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="text-center py-4">Tidak ada data penjualan</td>
-                  </tr>
-                ) : (
-                  sales.map((sale, index) => (
-                    <tr key={sale.productId} className="hover:bg-gray-50">
-                      <td className="border px-4 py-2">{index + 1}</td>
-                      <td className="border px-4 py-2">{sale.name}</td>
-                      <td className="border px-4 py-2">{sale.totalSold}</td>
-                      <td className="border px-4 py-2">{sale.totalRevenue.toLocaleString()}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+          {loading ? (
+            <p>Loading data...</p>
+          ) : (
+            <>
+              {/* Penjualan per Produk */}
+              <section className="mb-6">
+                <h2 className="text-xl font-semibold mb-4">Penjualan per Produk</h2>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={sales}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="totalRevenue" fill="#4f46e5" name="Pendapatan" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </section>
 
-          {/* Chart Produk */}
-          <div className="bg-white rounded shadow p-4 mb-6">
-            <h2 className="text-xl font-semibold mb-4">Grafik Pendapatan per Produk</h2>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={sales}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip formatter={(value) => `Rp ${(+value).toLocaleString()}`} />
-                <Legend />
-                <Bar dataKey="totalRevenue" fill="#4f46e5" name="Pendapatan (Rp)" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+              {/* Penjualan per Kategori */}
+              <section className="mb-6">
+                <h2 className="text-xl font-semibold mb-4">Pendapatan per Kategori</h2>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={categorySales}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="category" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="totalRevenue" fill="#10b981" name="Pendapatan" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </section>
 
-          {/* Chart Kategori */}
-          <div className="bg-white rounded shadow p-4 mb-6">
-            <h2 className="text-xl font-semibold mb-4">Grafik Pendapatan per Kategori</h2>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={categorySales}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="category" />
-                <YAxis />
-                <Tooltip formatter={(value) => `Rp ${(+value).toLocaleString()}`} />
-                <Legend />
-                <Bar dataKey="totalRevenue" fill="#10b981" name="Pendapatan (Rp)" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+              {/* Ringkasan Stok */}
+              <section className="mb-6">
+                <h2 className="text-xl font-semibold mb-4">Ringkasan Stok</h2>
+                <div className="bg-white p-4 rounded shadow">
+                  <p>Total Masuk: {stockSummary.totalAdded}</p>
+                  <p>Total Keluar: {stockSummary.totalRemoved}</p>
+                  <p>Stok Akhir: {stockSummary.stockEnding}</p>
+                </div>
+              </section>
 
-          <div className="text-right text-xl font-bold">
-            Total Pendapatan Bulan Ini: Rp {totalRevenue.toLocaleString()}
-          </div>
+              {/* Histori Stok */}
+              <section className="mb-6">
+                <h2 className="text-xl font-semibold mb-4">Histori Perubahan Stok</h2>
+                <div className="overflow-x-auto bg-white rounded shadow">
+                  <table className="min-w-full">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th className="py-2 px-4 border">Tanggal</th>
+                        <th className="py-2 px-4 border">Produk</th>
+                        <th className="py-2 px-4 border">Tipe</th>
+                        <th className="py-2 px-4 border">Jumlah</th>
+                        <th className="py-2 px-4 border">Keterangan</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stockHistory.map((entry, index) => (
+                        <tr key={index}>
+                          <td className="border px-4 py-2">
+                            {new Date(entry.date).toLocaleDateString("id-ID")}
+                          </td>
+                          <td className="border px-4 py-2">{entry.productName}</td>
+                          <td className="border px-4 py-2">{entry.type}</td>
+                          <td className="border px-4 py-2">{entry.quantity}</td>
+                          <td className="border px-4 py-2">{entry.description}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
 
+              <div className="text-right text-xl font-bold mt-6">
+                Total Pendapatan Bulan Ini: Rp {totalRevenue.toLocaleString("id-ID")}
+              </div>
+            </>
+          )}
           <Footer />
         </main>
       </div>

@@ -2599,6 +2599,37 @@ export namespace Prisma {
 
 
   /**
+   * Count Type PoinCountOutputType
+   */
+
+  export type PoinCountOutputType = {
+    orders: number
+  }
+
+  export type PoinCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    orders?: boolean | PoinCountOutputTypeCountOrdersArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PoinCountOutputType without action
+   */
+  export type PoinCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PoinCountOutputType
+     */
+    select?: PoinCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PoinCountOutputType without action
+   */
+  export type PoinCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderWhereInput
+  }
+
+
+  /**
    * Count Type VoucherCountOutputType
    */
 
@@ -11046,6 +11077,7 @@ export namespace Prisma {
     invoiceUrl: string | null
     storeId: string | null
     voucherId: string | null
+    poinId: string | null
     warehouseId: string | null
     paymentProof: string | null
     createdAt: Date | null
@@ -11063,6 +11095,7 @@ export namespace Prisma {
     invoiceUrl: string | null
     storeId: string | null
     voucherId: string | null
+    poinId: string | null
     warehouseId: string | null
     paymentProof: string | null
     createdAt: Date | null
@@ -11080,6 +11113,7 @@ export namespace Prisma {
     invoiceUrl: number
     storeId: number
     voucherId: number
+    poinId: number
     warehouseId: number
     paymentProof: number
     createdAt: number
@@ -11107,6 +11141,7 @@ export namespace Prisma {
     invoiceUrl?: true
     storeId?: true
     voucherId?: true
+    poinId?: true
     warehouseId?: true
     paymentProof?: true
     createdAt?: true
@@ -11124,6 +11159,7 @@ export namespace Prisma {
     invoiceUrl?: true
     storeId?: true
     voucherId?: true
+    poinId?: true
     warehouseId?: true
     paymentProof?: true
     createdAt?: true
@@ -11141,6 +11177,7 @@ export namespace Prisma {
     invoiceUrl?: true
     storeId?: true
     voucherId?: true
+    poinId?: true
     warehouseId?: true
     paymentProof?: true
     createdAt?: true
@@ -11245,6 +11282,7 @@ export namespace Prisma {
     invoiceUrl: string | null
     storeId: string
     voucherId: string | null
+    poinId: string | null
     warehouseId: string | null
     paymentProof: string | null
     createdAt: Date
@@ -11281,6 +11319,7 @@ export namespace Prisma {
     invoiceUrl?: boolean
     storeId?: boolean
     voucherId?: boolean
+    poinId?: boolean
     warehouseId?: boolean
     paymentProof?: boolean
     createdAt?: boolean
@@ -11291,6 +11330,7 @@ export namespace Prisma {
     warehouse?: boolean | Order$warehouseArgs<ExtArgs>
     store?: boolean | StoreDefaultArgs<ExtArgs>
     voucher?: boolean | Order$voucherArgs<ExtArgs>
+    poin?: boolean | Order$poinArgs<ExtArgs>
     items?: boolean | Order$itemsArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
@@ -11304,6 +11344,7 @@ export namespace Prisma {
     invoiceUrl?: boolean
     storeId?: boolean
     voucherId?: boolean
+    poinId?: boolean
     warehouseId?: boolean
     paymentProof?: boolean
     createdAt?: boolean
@@ -11314,6 +11355,7 @@ export namespace Prisma {
     warehouse?: boolean | Order$warehouseArgs<ExtArgs>
     store?: boolean | StoreDefaultArgs<ExtArgs>
     voucher?: boolean | Order$voucherArgs<ExtArgs>
+    poin?: boolean | Order$poinArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -11325,6 +11367,7 @@ export namespace Prisma {
     invoiceUrl?: boolean
     storeId?: boolean
     voucherId?: boolean
+    poinId?: boolean
     warehouseId?: boolean
     paymentProof?: boolean
     createdAt?: boolean
@@ -11335,6 +11378,7 @@ export namespace Prisma {
     warehouse?: boolean | Order$warehouseArgs<ExtArgs>
     store?: boolean | StoreDefaultArgs<ExtArgs>
     voucher?: boolean | Order$voucherArgs<ExtArgs>
+    poin?: boolean | Order$poinArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectScalar = {
@@ -11346,6 +11390,7 @@ export namespace Prisma {
     invoiceUrl?: boolean
     storeId?: boolean
     voucherId?: boolean
+    poinId?: boolean
     warehouseId?: boolean
     paymentProof?: boolean
     createdAt?: boolean
@@ -11354,12 +11399,13 @@ export namespace Prisma {
     confirmedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "shippingAddress" | "totalAmount" | "status" | "invoiceUrl" | "storeId" | "voucherId" | "warehouseId" | "paymentProof" | "createdAt" | "updatedAt" | "expiredAt" | "confirmedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "shippingAddress" | "totalAmount" | "status" | "invoiceUrl" | "storeId" | "voucherId" | "poinId" | "warehouseId" | "paymentProof" | "createdAt" | "updatedAt" | "expiredAt" | "confirmedAt", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     warehouse?: boolean | Order$warehouseArgs<ExtArgs>
     store?: boolean | StoreDefaultArgs<ExtArgs>
     voucher?: boolean | Order$voucherArgs<ExtArgs>
+    poin?: boolean | Order$poinArgs<ExtArgs>
     items?: boolean | Order$itemsArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -11368,12 +11414,14 @@ export namespace Prisma {
     warehouse?: boolean | Order$warehouseArgs<ExtArgs>
     store?: boolean | StoreDefaultArgs<ExtArgs>
     voucher?: boolean | Order$voucherArgs<ExtArgs>
+    poin?: boolean | Order$poinArgs<ExtArgs>
   }
   export type OrderIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     warehouse?: boolean | Order$warehouseArgs<ExtArgs>
     store?: boolean | StoreDefaultArgs<ExtArgs>
     voucher?: boolean | Order$voucherArgs<ExtArgs>
+    poin?: boolean | Order$poinArgs<ExtArgs>
   }
 
   export type $OrderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -11383,6 +11431,7 @@ export namespace Prisma {
       warehouse: Prisma.$WarehousePayload<ExtArgs> | null
       store: Prisma.$StorePayload<ExtArgs>
       voucher: Prisma.$VoucherPayload<ExtArgs> | null
+      poin: Prisma.$PoinPayload<ExtArgs> | null
       items: Prisma.$OrderItemPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -11394,6 +11443,7 @@ export namespace Prisma {
       invoiceUrl: string | null
       storeId: string
       voucherId: string | null
+      poinId: string | null
       warehouseId: string | null
       paymentProof: string | null
       createdAt: Date
@@ -11798,6 +11848,7 @@ export namespace Prisma {
     warehouse<T extends Order$warehouseArgs<ExtArgs> = {}>(args?: Subset<T, Order$warehouseArgs<ExtArgs>>): Prisma__WarehouseClient<$Result.GetResult<Prisma.$WarehousePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     store<T extends StoreDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StoreDefaultArgs<ExtArgs>>): Prisma__StoreClient<$Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     voucher<T extends Order$voucherArgs<ExtArgs> = {}>(args?: Subset<T, Order$voucherArgs<ExtArgs>>): Prisma__VoucherClient<$Result.GetResult<Prisma.$VoucherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    poin<T extends Order$poinArgs<ExtArgs> = {}>(args?: Subset<T, Order$poinArgs<ExtArgs>>): Prisma__PoinClient<$Result.GetResult<Prisma.$PoinPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     items<T extends Order$itemsArgs<ExtArgs> = {}>(args?: Subset<T, Order$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -11836,6 +11887,7 @@ export namespace Prisma {
     readonly invoiceUrl: FieldRef<"Order", 'String'>
     readonly storeId: FieldRef<"Order", 'String'>
     readonly voucherId: FieldRef<"Order", 'String'>
+    readonly poinId: FieldRef<"Order", 'String'>
     readonly warehouseId: FieldRef<"Order", 'String'>
     readonly paymentProof: FieldRef<"Order", 'String'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
@@ -12273,6 +12325,25 @@ export namespace Prisma {
      */
     include?: VoucherInclude<ExtArgs> | null
     where?: VoucherWhereInput
+  }
+
+  /**
+   * Order.poin
+   */
+  export type Order$poinArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Poin
+     */
+    select?: PoinSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Poin
+     */
+    omit?: PoinOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PoinInclude<ExtArgs> | null
+    where?: PoinWhereInput
   }
 
   /**
@@ -15693,6 +15764,7 @@ export namespace Prisma {
     id: string | null
     userId: string | null
     amount: number | null
+    used: boolean | null
     expiredAt: Date | null
     createdAt: Date | null
   }
@@ -15701,6 +15773,7 @@ export namespace Prisma {
     id: string | null
     userId: string | null
     amount: number | null
+    used: boolean | null
     expiredAt: Date | null
     createdAt: Date | null
   }
@@ -15709,6 +15782,7 @@ export namespace Prisma {
     id: number
     userId: number
     amount: number
+    used: number
     expiredAt: number
     createdAt: number
     _all: number
@@ -15727,6 +15801,7 @@ export namespace Prisma {
     id?: true
     userId?: true
     amount?: true
+    used?: true
     expiredAt?: true
     createdAt?: true
   }
@@ -15735,6 +15810,7 @@ export namespace Prisma {
     id?: true
     userId?: true
     amount?: true
+    used?: true
     expiredAt?: true
     createdAt?: true
   }
@@ -15743,6 +15819,7 @@ export namespace Prisma {
     id?: true
     userId?: true
     amount?: true
+    used?: true
     expiredAt?: true
     createdAt?: true
     _all?: true
@@ -15838,6 +15915,7 @@ export namespace Prisma {
     id: string
     userId: string
     amount: number
+    used: boolean
     expiredAt: Date
     createdAt: Date
     _count: PoinCountAggregateOutputType | null
@@ -15865,15 +15943,19 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     amount?: boolean
+    used?: boolean
     expiredAt?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    orders?: boolean | Poin$ordersArgs<ExtArgs>
+    _count?: boolean | PoinCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["poin"]>
 
   export type PoinSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
     amount?: boolean
+    used?: boolean
     expiredAt?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -15883,6 +15965,7 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     amount?: boolean
+    used?: boolean
     expiredAt?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -15892,13 +15975,16 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     amount?: boolean
+    used?: boolean
     expiredAt?: boolean
     createdAt?: boolean
   }
 
-  export type PoinOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "amount" | "expiredAt" | "createdAt", ExtArgs["result"]["poin"]>
+  export type PoinOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "amount" | "used" | "expiredAt" | "createdAt", ExtArgs["result"]["poin"]>
   export type PoinInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    orders?: boolean | Poin$ordersArgs<ExtArgs>
+    _count?: boolean | PoinCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PoinIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -15911,11 +15997,13 @@ export namespace Prisma {
     name: "Poin"
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
+      orders: Prisma.$OrderPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       userId: string
       amount: number
+      used: boolean
       expiredAt: Date
       createdAt: Date
     }, ExtArgs["result"]["poin"]>
@@ -16313,6 +16401,7 @@ export namespace Prisma {
   export interface Prisma__PoinClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    orders<T extends Poin$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Poin$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -16345,6 +16434,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Poin", 'String'>
     readonly userId: FieldRef<"Poin", 'String'>
     readonly amount: FieldRef<"Poin", 'Int'>
+    readonly used: FieldRef<"Poin", 'Boolean'>
     readonly expiredAt: FieldRef<"Poin", 'DateTime'>
     readonly createdAt: FieldRef<"Poin", 'DateTime'>
   }
@@ -16740,6 +16830,30 @@ export namespace Prisma {
      * Limit how many Poins to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Poin.orders
+   */
+  export type Poin$ordersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+    orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
+    cursor?: OrderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
   }
 
   /**
@@ -21453,6 +21567,7 @@ export namespace Prisma {
     invoiceUrl: 'invoiceUrl',
     storeId: 'storeId',
     voucherId: 'voucherId',
+    poinId: 'poinId',
     warehouseId: 'warehouseId',
     paymentProof: 'paymentProof',
     createdAt: 'createdAt',
@@ -21504,6 +21619,7 @@ export namespace Prisma {
     id: 'id',
     userId: 'userId',
     amount: 'amount',
+    used: 'used',
     expiredAt: 'expiredAt',
     createdAt: 'createdAt'
   };
@@ -22280,6 +22396,7 @@ export namespace Prisma {
     invoiceUrl?: StringNullableFilter<"Order"> | string | null
     storeId?: StringFilter<"Order"> | string
     voucherId?: StringNullableFilter<"Order"> | string | null
+    poinId?: StringNullableFilter<"Order"> | string | null
     warehouseId?: StringNullableFilter<"Order"> | string | null
     paymentProof?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
@@ -22290,6 +22407,7 @@ export namespace Prisma {
     warehouse?: XOR<WarehouseNullableScalarRelationFilter, WarehouseWhereInput> | null
     store?: XOR<StoreScalarRelationFilter, StoreWhereInput>
     voucher?: XOR<VoucherNullableScalarRelationFilter, VoucherWhereInput> | null
+    poin?: XOR<PoinNullableScalarRelationFilter, PoinWhereInput> | null
     items?: OrderItemListRelationFilter
   }
 
@@ -22302,6 +22420,7 @@ export namespace Prisma {
     invoiceUrl?: SortOrderInput | SortOrder
     storeId?: SortOrder
     voucherId?: SortOrderInput | SortOrder
+    poinId?: SortOrderInput | SortOrder
     warehouseId?: SortOrderInput | SortOrder
     paymentProof?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -22312,6 +22431,7 @@ export namespace Prisma {
     warehouse?: WarehouseOrderByWithRelationInput
     store?: StoreOrderByWithRelationInput
     voucher?: VoucherOrderByWithRelationInput
+    poin?: PoinOrderByWithRelationInput
     items?: OrderItemOrderByRelationAggregateInput
   }
 
@@ -22327,6 +22447,7 @@ export namespace Prisma {
     invoiceUrl?: StringNullableFilter<"Order"> | string | null
     storeId?: StringFilter<"Order"> | string
     voucherId?: StringNullableFilter<"Order"> | string | null
+    poinId?: StringNullableFilter<"Order"> | string | null
     warehouseId?: StringNullableFilter<"Order"> | string | null
     paymentProof?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
@@ -22337,6 +22458,7 @@ export namespace Prisma {
     warehouse?: XOR<WarehouseNullableScalarRelationFilter, WarehouseWhereInput> | null
     store?: XOR<StoreScalarRelationFilter, StoreWhereInput>
     voucher?: XOR<VoucherNullableScalarRelationFilter, VoucherWhereInput> | null
+    poin?: XOR<PoinNullableScalarRelationFilter, PoinWhereInput> | null
     items?: OrderItemListRelationFilter
   }, "id">
 
@@ -22349,6 +22471,7 @@ export namespace Prisma {
     invoiceUrl?: SortOrderInput | SortOrder
     storeId?: SortOrder
     voucherId?: SortOrderInput | SortOrder
+    poinId?: SortOrderInput | SortOrder
     warehouseId?: SortOrderInput | SortOrder
     paymentProof?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -22374,6 +22497,7 @@ export namespace Prisma {
     invoiceUrl?: StringNullableWithAggregatesFilter<"Order"> | string | null
     storeId?: StringWithAggregatesFilter<"Order"> | string
     voucherId?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    poinId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     warehouseId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     paymentProof?: StringNullableWithAggregatesFilter<"Order"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
@@ -22581,18 +22705,22 @@ export namespace Prisma {
     id?: StringFilter<"Poin"> | string
     userId?: StringFilter<"Poin"> | string
     amount?: IntFilter<"Poin"> | number
+    used?: BoolFilter<"Poin"> | boolean
     expiredAt?: DateTimeFilter<"Poin"> | Date | string
     createdAt?: DateTimeFilter<"Poin"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    orders?: OrderListRelationFilter
   }
 
   export type PoinOrderByWithRelationInput = {
     id?: SortOrder
     userId?: SortOrder
     amount?: SortOrder
+    used?: SortOrder
     expiredAt?: SortOrder
     createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
+    orders?: OrderOrderByRelationAggregateInput
   }
 
   export type PoinWhereUniqueInput = Prisma.AtLeast<{
@@ -22602,15 +22730,18 @@ export namespace Prisma {
     NOT?: PoinWhereInput | PoinWhereInput[]
     userId?: StringFilter<"Poin"> | string
     amount?: IntFilter<"Poin"> | number
+    used?: BoolFilter<"Poin"> | boolean
     expiredAt?: DateTimeFilter<"Poin"> | Date | string
     createdAt?: DateTimeFilter<"Poin"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    orders?: OrderListRelationFilter
   }, "id">
 
   export type PoinOrderByWithAggregationInput = {
     id?: SortOrder
     userId?: SortOrder
     amount?: SortOrder
+    used?: SortOrder
     expiredAt?: SortOrder
     createdAt?: SortOrder
     _count?: PoinCountOrderByAggregateInput
@@ -22627,6 +22758,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Poin"> | string
     userId?: StringWithAggregatesFilter<"Poin"> | string
     amount?: IntWithAggregatesFilter<"Poin"> | number
+    used?: BoolWithAggregatesFilter<"Poin"> | boolean
     expiredAt?: DateTimeWithAggregatesFilter<"Poin"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"Poin"> | Date | string
   }
@@ -23514,6 +23646,7 @@ export namespace Prisma {
     warehouse?: WarehouseCreateNestedOneWithoutOrdersInput
     store: StoreCreateNestedOneWithoutOrdersInput
     voucher?: VoucherCreateNestedOneWithoutOrdersInput
+    poin?: PoinCreateNestedOneWithoutOrdersInput
     items?: OrderItemCreateNestedManyWithoutOrderInput
   }
 
@@ -23526,6 +23659,7 @@ export namespace Prisma {
     invoiceUrl?: string | null
     storeId: string
     voucherId?: string | null
+    poinId?: string | null
     warehouseId?: string | null
     paymentProof?: string | null
     createdAt?: Date | string
@@ -23550,6 +23684,7 @@ export namespace Prisma {
     warehouse?: WarehouseUpdateOneWithoutOrdersNestedInput
     store?: StoreUpdateOneRequiredWithoutOrdersNestedInput
     voucher?: VoucherUpdateOneWithoutOrdersNestedInput
+    poin?: PoinUpdateOneWithoutOrdersNestedInput
     items?: OrderItemUpdateManyWithoutOrderNestedInput
   }
 
@@ -23562,6 +23697,7 @@ export namespace Prisma {
     invoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     storeId?: StringFieldUpdateOperationsInput | string
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
+    poinId?: NullableStringFieldUpdateOperationsInput | string | null
     warehouseId?: NullableStringFieldUpdateOperationsInput | string | null
     paymentProof?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23580,6 +23716,7 @@ export namespace Prisma {
     invoiceUrl?: string | null
     storeId: string
     voucherId?: string | null
+    poinId?: string | null
     warehouseId?: string | null
     paymentProof?: string | null
     createdAt?: Date | string
@@ -23610,6 +23747,7 @@ export namespace Prisma {
     invoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     storeId?: StringFieldUpdateOperationsInput | string
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
+    poinId?: NullableStringFieldUpdateOperationsInput | string | null
     warehouseId?: NullableStringFieldUpdateOperationsInput | string | null
     paymentProof?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23810,39 +23948,48 @@ export namespace Prisma {
   export type PoinCreateInput = {
     id?: string
     amount: number
+    used?: boolean
     expiredAt: Date | string
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutPoinInput
+    orders?: OrderCreateNestedManyWithoutPoinInput
   }
 
   export type PoinUncheckedCreateInput = {
     id?: string
     userId: string
     amount: number
+    used?: boolean
     expiredAt: Date | string
     createdAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutPoinInput
   }
 
   export type PoinUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    used?: BoolFieldUpdateOperationsInput | boolean
     expiredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutPoinNestedInput
+    orders?: OrderUpdateManyWithoutPoinNestedInput
   }
 
   export type PoinUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    used?: BoolFieldUpdateOperationsInput | boolean
     expiredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutPoinNestedInput
   }
 
   export type PoinCreateManyInput = {
     id?: string
     userId: string
     amount: number
+    used?: boolean
     expiredAt: Date | string
     createdAt?: Date | string
   }
@@ -23850,6 +23997,7 @@ export namespace Prisma {
   export type PoinUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    used?: BoolFieldUpdateOperationsInput | boolean
     expiredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23858,6 +24006,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    used?: BoolFieldUpdateOperationsInput | boolean
     expiredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -24767,6 +24916,11 @@ export namespace Prisma {
     isNot?: VoucherWhereInput | null
   }
 
+  export type PoinNullableScalarRelationFilter = {
+    is?: PoinWhereInput | null
+    isNot?: PoinWhereInput | null
+  }
+
   export type OrderCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -24776,6 +24930,7 @@ export namespace Prisma {
     invoiceUrl?: SortOrder
     storeId?: SortOrder
     voucherId?: SortOrder
+    poinId?: SortOrder
     warehouseId?: SortOrder
     paymentProof?: SortOrder
     createdAt?: SortOrder
@@ -24797,6 +24952,7 @@ export namespace Prisma {
     invoiceUrl?: SortOrder
     storeId?: SortOrder
     voucherId?: SortOrder
+    poinId?: SortOrder
     warehouseId?: SortOrder
     paymentProof?: SortOrder
     createdAt?: SortOrder
@@ -24814,6 +24970,7 @@ export namespace Prisma {
     invoiceUrl?: SortOrder
     storeId?: SortOrder
     voucherId?: SortOrder
+    poinId?: SortOrder
     warehouseId?: SortOrder
     paymentProof?: SortOrder
     createdAt?: SortOrder
@@ -25012,6 +25169,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     amount?: SortOrder
+    used?: SortOrder
     expiredAt?: SortOrder
     createdAt?: SortOrder
   }
@@ -25024,6 +25182,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     amount?: SortOrder
+    used?: SortOrder
     expiredAt?: SortOrder
     createdAt?: SortOrder
   }
@@ -25032,6 +25191,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     amount?: SortOrder
+    used?: SortOrder
     expiredAt?: SortOrder
     createdAt?: SortOrder
   }
@@ -26143,6 +26303,12 @@ export namespace Prisma {
     connect?: VoucherWhereUniqueInput
   }
 
+  export type PoinCreateNestedOneWithoutOrdersInput = {
+    create?: XOR<PoinCreateWithoutOrdersInput, PoinUncheckedCreateWithoutOrdersInput>
+    connectOrCreate?: PoinCreateOrConnectWithoutOrdersInput
+    connect?: PoinWhereUniqueInput
+  }
+
   export type OrderItemCreateNestedManyWithoutOrderInput = {
     create?: XOR<OrderItemCreateWithoutOrderInput, OrderItemUncheckedCreateWithoutOrderInput> | OrderItemCreateWithoutOrderInput[] | OrderItemUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutOrderInput | OrderItemCreateOrConnectWithoutOrderInput[]
@@ -26199,6 +26365,16 @@ export namespace Prisma {
     delete?: VoucherWhereInput | boolean
     connect?: VoucherWhereUniqueInput
     update?: XOR<XOR<VoucherUpdateToOneWithWhereWithoutOrdersInput, VoucherUpdateWithoutOrdersInput>, VoucherUncheckedUpdateWithoutOrdersInput>
+  }
+
+  export type PoinUpdateOneWithoutOrdersNestedInput = {
+    create?: XOR<PoinCreateWithoutOrdersInput, PoinUncheckedCreateWithoutOrdersInput>
+    connectOrCreate?: PoinCreateOrConnectWithoutOrdersInput
+    upsert?: PoinUpsertWithoutOrdersInput
+    disconnect?: PoinWhereInput | boolean
+    delete?: PoinWhereInput | boolean
+    connect?: PoinWhereUniqueInput
+    update?: XOR<XOR<PoinUpdateToOneWithWhereWithoutOrdersInput, PoinUpdateWithoutOrdersInput>, PoinUncheckedUpdateWithoutOrdersInput>
   }
 
   export type OrderItemUpdateManyWithoutOrderNestedInput = {
@@ -26345,12 +26521,54 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type OrderCreateNestedManyWithoutPoinInput = {
+    create?: XOR<OrderCreateWithoutPoinInput, OrderUncheckedCreateWithoutPoinInput> | OrderCreateWithoutPoinInput[] | OrderUncheckedCreateWithoutPoinInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutPoinInput | OrderCreateOrConnectWithoutPoinInput[]
+    createMany?: OrderCreateManyPoinInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type OrderUncheckedCreateNestedManyWithoutPoinInput = {
+    create?: XOR<OrderCreateWithoutPoinInput, OrderUncheckedCreateWithoutPoinInput> | OrderCreateWithoutPoinInput[] | OrderUncheckedCreateWithoutPoinInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutPoinInput | OrderCreateOrConnectWithoutPoinInput[]
+    createMany?: OrderCreateManyPoinInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
   export type UserUpdateOneRequiredWithoutPoinNestedInput = {
     create?: XOR<UserCreateWithoutPoinInput, UserUncheckedCreateWithoutPoinInput>
     connectOrCreate?: UserCreateOrConnectWithoutPoinInput
     upsert?: UserUpsertWithoutPoinInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPoinInput, UserUpdateWithoutPoinInput>, UserUncheckedUpdateWithoutPoinInput>
+  }
+
+  export type OrderUpdateManyWithoutPoinNestedInput = {
+    create?: XOR<OrderCreateWithoutPoinInput, OrderUncheckedCreateWithoutPoinInput> | OrderCreateWithoutPoinInput[] | OrderUncheckedCreateWithoutPoinInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutPoinInput | OrderCreateOrConnectWithoutPoinInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutPoinInput | OrderUpsertWithWhereUniqueWithoutPoinInput[]
+    createMany?: OrderCreateManyPoinInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutPoinInput | OrderUpdateWithWhereUniqueWithoutPoinInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutPoinInput | OrderUpdateManyWithWhereWithoutPoinInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type OrderUncheckedUpdateManyWithoutPoinNestedInput = {
+    create?: XOR<OrderCreateWithoutPoinInput, OrderUncheckedCreateWithoutPoinInput> | OrderCreateWithoutPoinInput[] | OrderUncheckedCreateWithoutPoinInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutPoinInput | OrderCreateOrConnectWithoutPoinInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutPoinInput | OrderUpsertWithWhereUniqueWithoutPoinInput[]
+    createMany?: OrderCreateManyPoinInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutPoinInput | OrderUpdateWithWhereUniqueWithoutPoinInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutPoinInput | OrderUpdateManyWithWhereWithoutPoinInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutVouchersInput = {
@@ -26912,15 +27130,19 @@ export namespace Prisma {
   export type PoinCreateWithoutUserInput = {
     id?: string
     amount: number
+    used?: boolean
     expiredAt: Date | string
     createdAt?: Date | string
+    orders?: OrderCreateNestedManyWithoutPoinInput
   }
 
   export type PoinUncheckedCreateWithoutUserInput = {
     id?: string
     amount: number
+    used?: boolean
     expiredAt: Date | string
     createdAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutPoinInput
   }
 
   export type PoinCreateOrConnectWithoutUserInput = {
@@ -27003,6 +27225,7 @@ export namespace Prisma {
     warehouse?: WarehouseCreateNestedOneWithoutOrdersInput
     store: StoreCreateNestedOneWithoutOrdersInput
     voucher?: VoucherCreateNestedOneWithoutOrdersInput
+    poin?: PoinCreateNestedOneWithoutOrdersInput
     items?: OrderItemCreateNestedManyWithoutOrderInput
   }
 
@@ -27014,6 +27237,7 @@ export namespace Prisma {
     invoiceUrl?: string | null
     storeId: string
     voucherId?: string | null
+    poinId?: string | null
     warehouseId?: string | null
     paymentProof?: string | null
     createdAt?: Date | string
@@ -27222,6 +27446,7 @@ export namespace Prisma {
     id?: StringFilter<"Poin"> | string
     userId?: StringFilter<"Poin"> | string
     amount?: IntFilter<"Poin"> | number
+    used?: BoolFilter<"Poin"> | boolean
     expiredAt?: DateTimeFilter<"Poin"> | Date | string
     createdAt?: DateTimeFilter<"Poin"> | Date | string
   }
@@ -27311,6 +27536,7 @@ export namespace Prisma {
     invoiceUrl?: StringNullableFilter<"Order"> | string | null
     storeId?: StringFilter<"Order"> | string
     voucherId?: StringNullableFilter<"Order"> | string | null
+    poinId?: StringNullableFilter<"Order"> | string | null
     warehouseId?: StringNullableFilter<"Order"> | string | null
     paymentProof?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
@@ -27581,6 +27807,7 @@ export namespace Prisma {
     user: UserCreateNestedOneWithoutOrdersInput
     warehouse?: WarehouseCreateNestedOneWithoutOrdersInput
     voucher?: VoucherCreateNestedOneWithoutOrdersInput
+    poin?: PoinCreateNestedOneWithoutOrdersInput
     items?: OrderItemCreateNestedManyWithoutOrderInput
   }
 
@@ -27592,6 +27819,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     invoiceUrl?: string | null
     voucherId?: string | null
+    poinId?: string | null
     warehouseId?: string | null
     paymentProof?: string | null
     createdAt?: Date | string
@@ -28629,6 +28857,29 @@ export namespace Prisma {
     create: XOR<VoucherCreateWithoutOrdersInput, VoucherUncheckedCreateWithoutOrdersInput>
   }
 
+  export type PoinCreateWithoutOrdersInput = {
+    id?: string
+    amount: number
+    used?: boolean
+    expiredAt: Date | string
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutPoinInput
+  }
+
+  export type PoinUncheckedCreateWithoutOrdersInput = {
+    id?: string
+    userId: string
+    amount: number
+    used?: boolean
+    expiredAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type PoinCreateOrConnectWithoutOrdersInput = {
+    where: PoinWhereUniqueInput
+    create: XOR<PoinCreateWithoutOrdersInput, PoinUncheckedCreateWithoutOrdersInput>
+  }
+
   export type OrderItemCreateWithoutOrderInput = {
     id?: string
     quantity: number
@@ -28805,6 +29056,35 @@ export namespace Prisma {
     used?: BoolFieldUpdateOperationsInput | boolean
   }
 
+  export type PoinUpsertWithoutOrdersInput = {
+    update: XOR<PoinUpdateWithoutOrdersInput, PoinUncheckedUpdateWithoutOrdersInput>
+    create: XOR<PoinCreateWithoutOrdersInput, PoinUncheckedCreateWithoutOrdersInput>
+    where?: PoinWhereInput
+  }
+
+  export type PoinUpdateToOneWithWhereWithoutOrdersInput = {
+    where?: PoinWhereInput
+    data: XOR<PoinUpdateWithoutOrdersInput, PoinUncheckedUpdateWithoutOrdersInput>
+  }
+
+  export type PoinUpdateWithoutOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    used?: BoolFieldUpdateOperationsInput | boolean
+    expiredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPoinNestedInput
+  }
+
+  export type PoinUncheckedUpdateWithoutOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    used?: BoolFieldUpdateOperationsInput | boolean
+    expiredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type OrderItemUpsertWithWhereUniqueWithoutOrderInput = {
     where: OrderItemWhereUniqueInput
     update: XOR<OrderItemUpdateWithoutOrderInput, OrderItemUncheckedUpdateWithoutOrderInput>
@@ -28979,6 +29259,7 @@ export namespace Prisma {
     user: UserCreateNestedOneWithoutOrdersInput
     store: StoreCreateNestedOneWithoutOrdersInput
     voucher?: VoucherCreateNestedOneWithoutOrdersInput
+    poin?: PoinCreateNestedOneWithoutOrdersInput
     items?: OrderItemCreateNestedManyWithoutOrderInput
   }
 
@@ -28991,6 +29272,7 @@ export namespace Prisma {
     invoiceUrl?: string | null
     storeId: string
     voucherId?: string | null
+    poinId?: string | null
     paymentProof?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -29040,6 +29322,7 @@ export namespace Prisma {
     warehouse?: WarehouseCreateNestedOneWithoutOrdersInput
     store: StoreCreateNestedOneWithoutOrdersInput
     voucher?: VoucherCreateNestedOneWithoutOrdersInput
+    poin?: PoinCreateNestedOneWithoutOrdersInput
   }
 
   export type OrderUncheckedCreateWithoutItemsInput = {
@@ -29051,6 +29334,7 @@ export namespace Prisma {
     invoiceUrl?: string | null
     storeId: string
     voucherId?: string | null
+    poinId?: string | null
     warehouseId?: string | null
     paymentProof?: string | null
     createdAt?: Date | string
@@ -29123,6 +29407,7 @@ export namespace Prisma {
     warehouse?: WarehouseUpdateOneWithoutOrdersNestedInput
     store?: StoreUpdateOneRequiredWithoutOrdersNestedInput
     voucher?: VoucherUpdateOneWithoutOrdersNestedInput
+    poin?: PoinUpdateOneWithoutOrdersNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutItemsInput = {
@@ -29134,6 +29419,7 @@ export namespace Prisma {
     invoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     storeId?: StringFieldUpdateOperationsInput | string
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
+    poinId?: NullableStringFieldUpdateOperationsInput | string | null
     warehouseId?: NullableStringFieldUpdateOperationsInput | string | null
     paymentProof?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -29228,6 +29514,52 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutPoinInput, UserUncheckedCreateWithoutPoinInput>
   }
 
+  export type OrderCreateWithoutPoinInput = {
+    id?: string
+    shippingAddress: string
+    totalAmount: number
+    status?: $Enums.OrderStatus
+    invoiceUrl?: string | null
+    paymentProof?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    expiredAt: Date | string
+    confirmedAt?: Date | string | null
+    user: UserCreateNestedOneWithoutOrdersInput
+    warehouse?: WarehouseCreateNestedOneWithoutOrdersInput
+    store: StoreCreateNestedOneWithoutOrdersInput
+    voucher?: VoucherCreateNestedOneWithoutOrdersInput
+    items?: OrderItemCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutPoinInput = {
+    id?: string
+    userId: string
+    shippingAddress: string
+    totalAmount: number
+    status?: $Enums.OrderStatus
+    invoiceUrl?: string | null
+    storeId: string
+    voucherId?: string | null
+    warehouseId?: string | null
+    paymentProof?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    expiredAt: Date | string
+    confirmedAt?: Date | string | null
+    items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutPoinInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutPoinInput, OrderUncheckedCreateWithoutPoinInput>
+  }
+
+  export type OrderCreateManyPoinInputEnvelope = {
+    data: OrderCreateManyPoinInput | OrderCreateManyPoinInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutPoinInput = {
     update: XOR<UserUpdateWithoutPoinInput, UserUncheckedUpdateWithoutPoinInput>
     create: XOR<UserCreateWithoutPoinInput, UserUncheckedCreateWithoutPoinInput>
@@ -29279,6 +29611,22 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     store?: StoreUncheckedUpdateOneWithoutAdminNestedInput
     Address?: AddressUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type OrderUpsertWithWhereUniqueWithoutPoinInput = {
+    where: OrderWhereUniqueInput
+    update: XOR<OrderUpdateWithoutPoinInput, OrderUncheckedUpdateWithoutPoinInput>
+    create: XOR<OrderCreateWithoutPoinInput, OrderUncheckedCreateWithoutPoinInput>
+  }
+
+  export type OrderUpdateWithWhereUniqueWithoutPoinInput = {
+    where: OrderWhereUniqueInput
+    data: XOR<OrderUpdateWithoutPoinInput, OrderUncheckedUpdateWithoutPoinInput>
+  }
+
+  export type OrderUpdateManyWithWhereWithoutPoinInput = {
+    where: OrderScalarWhereInput
+    data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyWithoutPoinInput>
   }
 
   export type UserCreateWithoutVouchersInput = {
@@ -29342,6 +29690,7 @@ export namespace Prisma {
     user: UserCreateNestedOneWithoutOrdersInput
     warehouse?: WarehouseCreateNestedOneWithoutOrdersInput
     store: StoreCreateNestedOneWithoutOrdersInput
+    poin?: PoinCreateNestedOneWithoutOrdersInput
     items?: OrderItemCreateNestedManyWithoutOrderInput
   }
 
@@ -29353,6 +29702,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     invoiceUrl?: string | null
     storeId: string
+    poinId?: string | null
     warehouseId?: string | null
     paymentProof?: string | null
     createdAt?: Date | string
@@ -29683,6 +30033,7 @@ export namespace Prisma {
   export type PoinCreateManyUserInput = {
     id?: string
     amount: number
+    used?: boolean
     expiredAt: Date | string
     createdAt?: Date | string
   }
@@ -29712,6 +30063,7 @@ export namespace Prisma {
     invoiceUrl?: string | null
     storeId: string
     voucherId?: string | null
+    poinId?: string | null
     warehouseId?: string | null
     paymentProof?: string | null
     createdAt?: Date | string
@@ -29797,20 +30149,25 @@ export namespace Prisma {
   export type PoinUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    used?: BoolFieldUpdateOperationsInput | boolean
     expiredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUpdateManyWithoutPoinNestedInput
   }
 
   export type PoinUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    used?: BoolFieldUpdateOperationsInput | boolean
     expiredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutPoinNestedInput
   }
 
   export type PoinUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+    used?: BoolFieldUpdateOperationsInput | boolean
     expiredAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -29882,6 +30239,7 @@ export namespace Prisma {
     warehouse?: WarehouseUpdateOneWithoutOrdersNestedInput
     store?: StoreUpdateOneRequiredWithoutOrdersNestedInput
     voucher?: VoucherUpdateOneWithoutOrdersNestedInput
+    poin?: PoinUpdateOneWithoutOrdersNestedInput
     items?: OrderItemUpdateManyWithoutOrderNestedInput
   }
 
@@ -29893,6 +30251,7 @@ export namespace Prisma {
     invoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     storeId?: StringFieldUpdateOperationsInput | string
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
+    poinId?: NullableStringFieldUpdateOperationsInput | string | null
     warehouseId?: NullableStringFieldUpdateOperationsInput | string | null
     paymentProof?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -29910,6 +30269,7 @@ export namespace Prisma {
     invoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     storeId?: StringFieldUpdateOperationsInput | string
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
+    poinId?: NullableStringFieldUpdateOperationsInput | string | null
     warehouseId?: NullableStringFieldUpdateOperationsInput | string | null
     paymentProof?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -29987,6 +30347,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     invoiceUrl?: string | null
     voucherId?: string | null
+    poinId?: string | null
     warehouseId?: string | null
     paymentProof?: string | null
     createdAt?: Date | string
@@ -30056,6 +30417,7 @@ export namespace Prisma {
     user?: UserUpdateOneRequiredWithoutOrdersNestedInput
     warehouse?: WarehouseUpdateOneWithoutOrdersNestedInput
     voucher?: VoucherUpdateOneWithoutOrdersNestedInput
+    poin?: PoinUpdateOneWithoutOrdersNestedInput
     items?: OrderItemUpdateManyWithoutOrderNestedInput
   }
 
@@ -30067,6 +30429,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     invoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
+    poinId?: NullableStringFieldUpdateOperationsInput | string | null
     warehouseId?: NullableStringFieldUpdateOperationsInput | string | null
     paymentProof?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -30084,6 +30447,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     invoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
+    poinId?: NullableStringFieldUpdateOperationsInput | string | null
     warehouseId?: NullableStringFieldUpdateOperationsInput | string | null
     paymentProof?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -30445,6 +30809,7 @@ export namespace Prisma {
     invoiceUrl?: string | null
     storeId: string
     voucherId?: string | null
+    poinId?: string | null
     paymentProof?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -30466,6 +30831,7 @@ export namespace Prisma {
     user?: UserUpdateOneRequiredWithoutOrdersNestedInput
     store?: StoreUpdateOneRequiredWithoutOrdersNestedInput
     voucher?: VoucherUpdateOneWithoutOrdersNestedInput
+    poin?: PoinUpdateOneWithoutOrdersNestedInput
     items?: OrderItemUpdateManyWithoutOrderNestedInput
   }
 
@@ -30478,6 +30844,7 @@ export namespace Prisma {
     invoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     storeId?: StringFieldUpdateOperationsInput | string
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
+    poinId?: NullableStringFieldUpdateOperationsInput | string | null
     paymentProof?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -30495,6 +30862,77 @@ export namespace Prisma {
     invoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     storeId?: StringFieldUpdateOperationsInput | string
     voucherId?: NullableStringFieldUpdateOperationsInput | string | null
+    poinId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProof?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OrderCreateManyPoinInput = {
+    id?: string
+    userId: string
+    shippingAddress: string
+    totalAmount: number
+    status?: $Enums.OrderStatus
+    invoiceUrl?: string | null
+    storeId: string
+    voucherId?: string | null
+    warehouseId?: string | null
+    paymentProof?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    expiredAt: Date | string
+    confirmedAt?: Date | string | null
+  }
+
+  export type OrderUpdateWithoutPoinInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    shippingAddress?: StringFieldUpdateOperationsInput | string
+    totalAmount?: IntFieldUpdateOperationsInput | number
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    invoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProof?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneRequiredWithoutOrdersNestedInput
+    warehouse?: WarehouseUpdateOneWithoutOrdersNestedInput
+    store?: StoreUpdateOneRequiredWithoutOrdersNestedInput
+    voucher?: VoucherUpdateOneWithoutOrdersNestedInput
+    items?: OrderItemUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutPoinInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    shippingAddress?: StringFieldUpdateOperationsInput | string
+    totalAmount?: IntFieldUpdateOperationsInput | number
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    invoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    storeId?: StringFieldUpdateOperationsInput | string
+    voucherId?: NullableStringFieldUpdateOperationsInput | string | null
+    warehouseId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentProof?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateManyWithoutPoinInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    shippingAddress?: StringFieldUpdateOperationsInput | string
+    totalAmount?: IntFieldUpdateOperationsInput | number
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    invoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    storeId?: StringFieldUpdateOperationsInput | string
+    voucherId?: NullableStringFieldUpdateOperationsInput | string | null
+    warehouseId?: NullableStringFieldUpdateOperationsInput | string | null
     paymentProof?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -30510,6 +30948,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     invoiceUrl?: string | null
     storeId: string
+    poinId?: string | null
     warehouseId?: string | null
     paymentProof?: string | null
     createdAt?: Date | string
@@ -30532,6 +30971,7 @@ export namespace Prisma {
     user?: UserUpdateOneRequiredWithoutOrdersNestedInput
     warehouse?: WarehouseUpdateOneWithoutOrdersNestedInput
     store?: StoreUpdateOneRequiredWithoutOrdersNestedInput
+    poin?: PoinUpdateOneWithoutOrdersNestedInput
     items?: OrderItemUpdateManyWithoutOrderNestedInput
   }
 
@@ -30543,6 +30983,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     invoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     storeId?: StringFieldUpdateOperationsInput | string
+    poinId?: NullableStringFieldUpdateOperationsInput | string | null
     warehouseId?: NullableStringFieldUpdateOperationsInput | string | null
     paymentProof?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -30560,6 +31001,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     invoiceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     storeId?: StringFieldUpdateOperationsInput | string
+    poinId?: NullableStringFieldUpdateOperationsInput | string | null
     warehouseId?: NullableStringFieldUpdateOperationsInput | string | null
     paymentProof?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
