@@ -88,7 +88,7 @@ class TransactionController {
                         description: `Pembayaran Order #${order.id}`,
                         currency: "IDR",
                         reminderTime: 1,
-                        successRedirectUrl: "https://8ba1-182-253-123-60.ngrok-free.app/",
+                        successRedirectUrl: "https://abd4-182-253-123-60.ngrok-free.app/",
                     };
                     const invoice = yield xendit_1.default.Invoice.createInvoice({ data: invoiceData });
                     yield txn.order.update({
@@ -169,50 +169,3 @@ class TransactionController {
     }
 }
 exports.TransactionController = TransactionController;
-//     const { status, external_id } = req.body;
-//     if (!status || !external_id) {
-//       res.status(400).json({ message: "Missing status or external_id" });
-//     }
-//     try {
-//       if (status === "PAID") {
-//         // Update dan kurangi stok
-//         await prisma.$transaction(async (txn) => {
-//           const order = await txn.order.update({
-//             where: { id: external_id },
-//             data: {
-//               status: "PAID",
-//               confirmedAt: new Date(),
-//             },
-//             include: {
-//               items: true,
-//             },
-//           });
-//           for (const item of order.items) {
-//             const stock = await txn.productStock.findFirst({
-//               where: {
-//                 productId: item.productId,
-//                 storeId: order.storeId,
-//               },
-//             });
-//             if (!stock || stock.quantity < item.quantity) {
-//               throw new Error("Stok tidak mencukupi");
-//             }
-//             await txn.productStock.update({
-//               where: { id: stock.id },
-//               data: { quantity: stock.quantity - item.quantity },
-//             });
-//           }
-//         });
-//       } else if (status === "EXPIRED") {
-//         await prisma.order.update({
-//           where: { id: external_id },
-//           data: { status: "EXPIRED" },
-//         });
-//       }
-//       res.status(200).json({ message: "Status updated successfully ✅" });
-//     } catch (err) {
-//       console.error("Update status error:", err);
-//       res.status(400).json({ message: "Failed to update status", error: err });
-//     }
-//   }
-// }

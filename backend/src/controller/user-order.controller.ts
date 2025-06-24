@@ -34,7 +34,7 @@ export class OrderController {
   } catch (err) {
     console.error("Error fetching user transactions:", err);
     if (!res.headersSent)
-      res.status(500).json({ error: (err as Error).message || err });
-  }
+      res.status(500).json({ error: (err as Error).message || err });
+  }
 }
 }

@@ -21,6 +21,7 @@ const discount_router_1 = require("./routers/discount.router");
 const rajaongkir_router_1 = require("./routers/rajaongkir.router");
 const transaction_router_1 = require("./routers/transaction.router");
 const product2_router_1 = require("./routers/product2.router");
+const user_order_router_1 = require("./routers/user-order.router");
 // import { RajaOngkirRouter } from "./routers/rajaongkir.router";
 //import cron from "node-cron";
 // import { OrderRouter } from "./routers/order.router";
@@ -34,6 +35,8 @@ app.get("/api", (req, res) => {
 app.use("/api/public", express_1.default.static(path_1.default.join(__dirname, "../public")));
 const userRouter = new user_router_1.UserRouter();
 app.use("/api/users", userRouter.getRouter());
+const userorRouter = new user_order_router_1.userorderRouter();
+app.use("/api/userorder", userorRouter.getRouter());
 const authRouter = new auth_router_1.AuthRouter();
 app.use("/api/auth", authRouter.getRouter());
 const rewardRouter = new reward_router_1.RewardRouter();

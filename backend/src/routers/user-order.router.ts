@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { AuthMiddleware } from "../middleware/auth.middleware";
-import { OrderController } from "../controller/Order.controller";
+import { OrderController } from "../controller/user-order.controller";
 
 
 export class userorderRouter {
@@ -27,5 +27,5 @@ export class userorderRouter {
 
   getRouter() {
     return this.router;
-  }
+  }
 }
