@@ -5,11 +5,11 @@ export class StoreController {
   // Create Store
   async createStore(req: Request, res: Response) {
     try {
-      const { name, address, adminId, city_id } = req.body;
+      const { name, address, adminId, city_id, latitude, longitude } = req.body;
 
-      if (!name || !address || !adminId || !city_id) {
+      if (!name || !address || !adminId || !city_id || !latitude || !longitude) {
          res.status(400).json({
-          error: 'Missing required fields: name, address, adminId, city_id',
+          error: 'Missing required fields: name, address, adminId, city_id, latitude, longitude',
         });
       }
 
@@ -38,7 +38,9 @@ export class StoreController {
           name,
           address,
           adminId,
-          city_id, // string langsung, tanpa Number()
+          city_id,
+          latitude,
+          longitude,
         },
       });
 
@@ -128,7 +130,7 @@ export class StoreController {
   async updateStore(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { name, address, adminId, city_id } = req.body;
+      const { name, address, adminId, city_id, latitude, longitude } = req.body;
 
       const store = await prisma.store.findUnique({ where: { id } });
       if (!store) {
@@ -167,6 +169,8 @@ export class StoreController {
           address,
           adminId,
           city_id,
+          latitude,
+          longitude,
         },
       });
 

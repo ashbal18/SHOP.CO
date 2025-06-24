@@ -16,6 +16,11 @@ import { DiscountRouter } from "./routers/discount.router";
 import { RajaOngkirRouter } from "./routers/rajaongkir.router";
 import { TransactionRouter } from "./routers/transaction.router";
 import { ProductRouter2 } from "./routers/product2.router";
+import { userorderRouter } from "./routers/user-order.router";
+
+
+
+
 // import { RajaOngkirRouter } from "./routers/rajaongkir.router";
 //import cron from "node-cron";
 // import { OrderRouter } from "./routers/order.router";
@@ -34,6 +39,9 @@ app.use("/api/public", express.static(path.join(__dirname, "../public")));
 
 const userRouter = new UserRouter();
 app.use("/api/users", userRouter.getRouter());
+
+const userorRouter = new userorderRouter();
+app.use("/api/userorder", userorRouter.getRouter());
 
 const authRouter = new AuthRouter();
 app.use("/api/auth", authRouter.getRouter());

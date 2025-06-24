@@ -19,10 +19,10 @@ class StoreController {
     createStore(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { name, address, adminId, city_id } = req.body;
-                if (!name || !address || !adminId || !city_id) {
+                const { name, address, adminId, city_id, latitude, longitude } = req.body;
+                if (!name || !address || !adminId || !city_id || !latitude || !longitude) {
                     res.status(400).json({
-                        error: 'Missing required fields: name, address, adminId, city_id',
+                        error: 'Missing required fields: name, address, adminId, city_id, latitude, longitude',
                     });
                 }
                 const adminUser = yield prisma_1.default.user.findUnique({
@@ -46,7 +46,9 @@ class StoreController {
                         name,
                         address,
                         adminId,
-                        city_id, // string langsung, tanpa Number()
+                        city_id,
+                        latitude,
+                        longitude,
                     },
                 });
                 res.status(201).json(newStore);
@@ -139,7 +141,7 @@ class StoreController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { id } = req.params;
-                const { name, address, adminId, city_id } = req.body;
+                const { name, address, adminId, city_id, latitude, longitude } = req.body;
                 const store = yield prisma_1.default.store.findUnique({ where: { id } });
                 if (!store) {
                     res.status(404).json({ error: 'Store not found' });
@@ -172,6 +174,8 @@ class StoreController {
                         address,
                         adminId,
                         city_id,
+                        latitude,
+                        longitude,
                     },
                 });
                 res.status(200).json(updatedStore);
