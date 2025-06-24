@@ -27,10 +27,10 @@ export class AuthController {
         const salt = await genSalt(10);
         const hashedPass = await hash(password, salt);
 
-        // Generate a unique referral code for the new user
+        
         const newReferralCode = Math.random().toString(36).substring(2, 10);
 
-        // Create the new user
+       
         const user = await prisma.user.create({
           data: {
             name,
@@ -247,19 +247,18 @@ export class AuthController {
       } else {
         const { password, confirmPassword } = req.body;
 
-        // Check if passwords match
+
         if (password !== confirmPassword) {
-          // Send response when passwords do not match
           res.status(400).send({ message: "Passwords do not match" });
         } else {
-          // Decode the token to get the user's email
+          
           const decoded: any = verify(token as string, process.env.KEY_JWT!);
 
-          // Find the user based on email decoded from the token
+          
           const user = await prisma.user.findUnique({ where: { email: decoded.email } });
 
           if (!user) {
-            // Send response if user does not exist
+            
             res.status(400).send({ message: "Invalid password reset token" });
           } else {
             // Hash the new password
