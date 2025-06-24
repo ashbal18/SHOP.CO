@@ -181,7 +181,7 @@ export class StoreController {
     }
   }
 
-  // Delete Store
+  
   async deleteStore(req: Request, res: Response) {
     try {
       const { id } = req.params;
