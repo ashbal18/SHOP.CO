@@ -4,7 +4,7 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { Bounce, ToastContainer } from "react-toastify";
 import { auth } from "@/lib/auth";
-import Image from "next/image";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,8 +21,8 @@ export const metadata: Metadata = {
   description: "SHOP.CO",
     icons: {
     icon: [
-      { url: "/logo.png" }, // Favicon standar
-      { url: "/logo.png", type: "image/svg+xml" }, // Logo SVG opsional
+      { url: "/logo.png" }, 
+      { url: "/logo.png", type: "image/svg+xml" }, 
     ],
   },
 };

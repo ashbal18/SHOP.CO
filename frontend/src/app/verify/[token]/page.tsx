@@ -1,6 +1,5 @@
 import VerifyPage from "@/components/verify";
 
-
 export default async function Page({
   params,
 }: {
