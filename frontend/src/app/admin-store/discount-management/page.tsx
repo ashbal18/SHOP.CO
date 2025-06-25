@@ -131,7 +131,7 @@ export default function DiscountManagementPage() {
     if (!product || !product.price) return "-";
 
     const originalPrice = product.price;
-    let finalPrice = discount.isPercentage
+    const finalPrice = discount.isPercentage
       ? originalPrice - (originalPrice * discount.amount) / 100
       : originalPrice - discount.amount;
 
