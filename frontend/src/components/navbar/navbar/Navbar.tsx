@@ -31,22 +31,6 @@ export default function Navbar() {
 
           {/* Menu */}
           <ul className="hidden md:flex space-x-6 items-center">
-            <li className="relative group">
-              <button className="flex items-center space-x-1 hover:text-gray-700">
-                <span>Shop</span>
-                <svg
-                  className="w-3 h-3"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </button>
-              
-            </li>
             <li>
               <Link href="/newarrivals" className="hover:text-gray-700">New Arrivals</Link>
             </li>
@@ -55,14 +39,6 @@ export default function Navbar() {
             </li>
           </ul>
 
-          {/* Search bar */}
-          <div className="flex-1 max-w-lg mx-4 hidden md:block">
-            <input
-              type="search"
-              placeholder="Search for products..."
-              className="w-full border border-gray-300 rounded-full py-2 px-4 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
-            />
-          </div>
 
           {/* Icons */}
           <div className="flex items-center space-x-4">

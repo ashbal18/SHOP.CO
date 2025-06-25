@@ -6,19 +6,9 @@ import axios from "@/lib/axios";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 
-type Category = {
-  name: string;
-};
-
-type Store = {
-  id: string;
-  name: string;
-};
-
-type Stock = {
-  quantity: number;
-};
-
+type Category = { name: string };
+type Store = { id: string; name: string };
+type Stock = { quantity: number };
 type Discount = {
   id: string;
   name: string;
@@ -28,7 +18,6 @@ type Discount = {
   startDate: string;
   endDate: string;
 };
-
 type Product = {
   id: string;
   name: string;
@@ -53,6 +42,10 @@ export default function Newarrivals() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStoreId, setSelectedStoreId] = useState("all");
 
+  // PAGINATION
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
   useEffect(() => {
     if (!session?.accessToken) return;
 
@@ -66,8 +59,8 @@ export default function Newarrivals() {
           }),
         ]);
 
-        setProducts(productRes.data as Product[]);
-        setStores((storeRes.data.stores ?? storeRes.data) as Store[]);
+        setProducts(productRes.data);
+        setStores(storeRes.data.stores ?? storeRes.data);
       } catch (err) {
         setError("Failed to load data");
         console.error(err);
@@ -91,10 +84,16 @@ export default function Newarrivals() {
         selectedCategory === "all" || product.category?.name === selectedCategory;
       const matchStore =
         selectedStoreId === "all" || product.store?.id === selectedStoreId;
-
       return matchName && matchCategory && matchStore;
     });
   }, [products, search, selectedCategory, selectedStoreId]);
+
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredProducts.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredProducts, currentPage]);
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
   const calculateDiscountedPrice = (product: Product) => {
     const discount = product.discount;
@@ -106,7 +105,6 @@ export default function Newarrivals() {
         : product.price - discount.amount;
     }
 
-    // Untuk jenis MIN_PURCHASE atau BUY_ONE_GET_ONE bisa dihandle sesuai tampilan saja
     return product.price;
   };
 
@@ -138,7 +136,7 @@ export default function Newarrivals() {
   return (
     <section className="w-full bg-white py-12 px-6">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl font-extrabold text-gray-900 mb-6">ALL PRODUCTS</h2>
+        <h2 className="text-3xl font-extrabold text-gray-900 mb-6">NEW ARRIVALS</h2>
 
         {/* FILTER */}
         <div className="flex flex-col md:flex-row flex-wrap gap-4 mb-8">
@@ -146,13 +144,19 @@ export default function Newarrivals() {
             type="text"
             placeholder="Search product name..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1); // reset halaman
+            }}
             className="border px-4 py-2 rounded-md w-full md:w-1/3"
           />
 
           <select
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={(e) => {
+              setSelectedCategory(e.target.value);
+              setCurrentPage(1);
+            }}
             className="border px-4 py-2 rounded-md w-full md:w-1/4"
           >
             {uniqueCategories.map((cat) => (
@@ -164,7 +168,10 @@ export default function Newarrivals() {
 
           <select
             value={selectedStoreId}
-            onChange={(e) => setSelectedStoreId(e.target.value)}
+            onChange={(e) => {
+              setSelectedStoreId(e.target.value);
+              setCurrentPage(1);
+            }}
             className="border px-4 py-2 rounded-md w-full md:w-1/4"
           >
             <option value="all">All Stores</option>
@@ -178,18 +185,17 @@ export default function Newarrivals() {
 
         {/* PRODUCT LIST */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-          {filteredProducts.map((product) => {
+          {paginatedProducts.map((product) => {
             const totalStock = Array.isArray(product.stocks)
               ? product.stocks.reduce((sum, s) => sum + (s.quantity || 0), 0)
               : 0;
-
             const hasDiscount = !!product.discount;
             const finalPrice = calculateDiscountedPrice(product);
 
             return (
               <div
                 key={product.id}
-                className="border rounded-lg p-4 cursor-pointer shadow-sm hover:shadow-md transition"
+                className="border rounded-lg p-4 shadow-sm hover:shadow-md transition"
               >
                 <Link href={`/detail/${product.id}`}>
                   <img
@@ -233,6 +239,39 @@ export default function Newarrivals() {
             );
           })}
         </div>
+
+        {/* PAGINATION CONTROL */}
+        {totalPages > 1 && (
+          <div className="mt-10 flex justify-center items-center gap-2 text-sm">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 border rounded disabled:opacity-50"
+            >
+              Prev
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`px-3 py-1 border rounded ${
+                  currentPage === i + 1 ? "bg-blue-500 text-white" : ""
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 border rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
 
         {filteredProducts.length === 0 && (
           <div className="mt-10 text-center text-gray-500">No products found.</div>
