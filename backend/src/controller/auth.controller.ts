@@ -46,25 +46,23 @@ export class AuthController {
 
         const link = `${process.env.URL_FE}/verify/${token}`;
 
-        // Check if the user provided a valid referral code
-        if (referralCode) {
-          // Find the referrer user (User A)
+        
+        if (referralCode) {       
           const referrer = await prisma.user.findUnique({
             where: { referralCode },
           });
 
-          // If referrer exists, give points to the referrer and voucher to the new user
-          if (referrer) {
-            // Add points to the referrer (User A)
+          
+          if (referrer) { 
             await prisma.poin.create({
               data: {
                 userId: referrer.id,
-                amount: 10, // Assign 10 points for the referral
-                expiredAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // Set points expiry (1 year)
+                amount: 10, 
+                expiredAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), 
               },
             });
 
-            // Create a voucher for the new user (User B)
+            
             await prisma.voucher.create({
               data: {
                 userId: user.id,
@@ -78,14 +76,14 @@ export class AuthController {
           }
         }
 
-        // Determine the email template based on the user's role
+        
         let templateName = "";
         if (user.roles === "ADMIN") {
           templateName = "verifyAdmin.hbs";
         } else if (user.roles === "SUPER_ADMIN") {
           templateName = "verifySuperAdmin.hbs";
         } else {
-          templateName = "verify.hbs"; // Default to customer template
+          templateName = "verify.hbs"; 
         }
 
         const templatePath = path.join(__dirname, "../templates", templateName);
@@ -100,7 +98,7 @@ export class AuthController {
           html,
         });
 
-        // Send the success response after everything is done
+       
         res.status(201).send({ message: "User created ✅" });
       }
     } catch (err) {
@@ -109,7 +107,7 @@ export class AuthController {
       statusCode = 400;
     }
 
-    // If any error occurred, send the error message
+    
     if (errorMessage) {
       res.status(statusCode).send({ message: errorMessage });
     }
@@ -286,28 +284,29 @@ export class AuthController {
     try {
       const { email, name, avatar } = req.body;
 
+      // Validasi data wajib
       if (!email || !name) {
         res.status(400).json({ message: "Missing required Google user data" });
       }
 
       let user = await prisma.user.findUnique({ where: { email } });
 
-      // Jika user belum terdaftar, lakukan register
+      // Jika belum terdaftar, buat akun baru
       if (!user) {
         user = await prisma.user.create({
           data: {
             name,
             email,
-            password: Math.random().toString(36).slice(-8), // Random password
+            password: Math.random().toString(36).slice(-8), // Password acak
             isVerify: true,
-            roles: "CUSTOMER", // Pastikan role CUSTOMER
+            roles: "CUSTOMER",
             avatar,
             referralCode: Math.random().toString(36).substring(2, 10),
           },
         });
       }
 
-      // Jika user sudah ada tapi role tidak ada, update jadi CUSTOMER
+      // Jika user sudah terdaftar tapi belum punya role
       if (!user.roles) {
         user = await prisma.user.update({
           where: { email },
@@ -315,12 +314,13 @@ export class AuthController {
         });
       }
 
-      // Buat JWT token
+      // Generate JWT token
       const payload = { id: user.id, role: user.roles };
       const access_token = sign(payload, process.env.KEY_JWT!, {
         expiresIn: "1h",
       });
 
+      // Sukses response
       res.status(200).json({
         message: "Login with Google successful",
         data: {
@@ -334,7 +334,7 @@ export class AuthController {
         access_token,
       });
     } catch (err) {
-      console.error(err);
+      console.error("[Google Auth Error]", err);
       res.status(500).json({ message: "Google login failed", error: err });
     }
   }
