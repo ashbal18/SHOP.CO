@@ -138,7 +138,7 @@ export default function Newarrivals() {
   return (
     <section className="w-full bg-white py-12 px-6">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl font-extrabold text-gray-900 mb-6">ALL PRODUCTS</h2>
+        <h2 className="text-3xl font-extrabold text-gray-900 mb-6">NEW ARRIVALS</h2>
 
         {/* FILTER */}
         <div className="flex flex-col md:flex-row flex-wrap gap-4 mb-8">

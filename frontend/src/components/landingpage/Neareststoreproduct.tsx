@@ -8,21 +8,10 @@ import "leaflet/dist/leaflet.css";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 
-const MapContainer = dynamic(
-  () => import("react-leaflet").then((mod) => mod.MapContainer),
-  { ssr: false }
-);
-const TileLayer = dynamic(
-  () => import("react-leaflet").then((mod) => mod.TileLayer),
-  { ssr: false }
-);
-const Marker = dynamic(
-  () => import("react-leaflet").then((mod) => mod.Marker),
-  { ssr: false }
-);
-const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
-  ssr: false,
-});
+const MapContainer = dynamic(() => import("react-leaflet").then(mod => mod.MapContainer), { ssr: false });
+const TileLayer = dynamic(() => import("react-leaflet").then(mod => mod.TileLayer), { ssr: false });
+const Marker = dynamic(() => import("react-leaflet").then(mod => mod.Marker), { ssr: false });
+const Popup = dynamic(() => import("react-leaflet").then(mod => mod.Popup), { ssr: false });
 
 type Store = {
   id: string;
@@ -56,13 +45,9 @@ export default function NearestProductsPage() {
 
   const [store, setStore] = useState<Store | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
-  const [userLocation, setUserLocation] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -135,8 +120,6 @@ export default function NearestProductsPage() {
     return <div className="text-center text-red-500 py-10">{error}</div>;
   }
 
-  const productsToShow = showAll ? products : products.slice(0, 4);
-
   return (
     <main className="p-6 max-w-7xl mx-auto">
       <h1 className="text-3xl font-bold mb-4">Produk dari Toko Terdekat</h1>
@@ -146,8 +129,7 @@ export default function NearestProductsPage() {
           <h2 className="text-xl font-semibold">{store.name}</h2>
           <p className="text-gray-600">{store.address}</p>
           <p className="text-sm text-gray-500">
-            Jarak:{" "}
-            <span className="font-medium">{store.distance.toFixed(2)} km</span>
+            Jarak: <span className="font-medium">{store.distance.toFixed(2)} km</span>
           </p>
         </div>
       )}
@@ -179,71 +161,69 @@ export default function NearestProductsPage() {
       </div>
 
       {products.length === 0 ? (
-        <p className="text-center text-gray-500">
-          Tidak ada produk dari toko terdekat.
-        </p>
+        <p className="text-center text-gray-500">Tidak ada produk dari toko terdekat.</p>
       ) : (
         <section>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-{productsToShow.map((product) => (
-  <Link
-    key={product.id}
-    href={`/detail/${product.id}`}
-    className="border rounded-lg p-4 shadow-sm hover:shadow-md transition block"
-  >
-    <img
-      src={product.imageUrl || "/default-product-image.png"}
-      alt={product.name}
-      className="w-full h-48 object-cover rounded-lg"
-    />
-    <div className="mt-4">
-      <h3 className="font-semibold text-lg">{product.name}</h3>
-      <p className="text-sm text-gray-600 truncate">
-        {product.description || "Tidak ada deskripsi"}
-      </p>
+            {products.slice(0, 4).map((product) => (
+              <Link
+                key={product.id}
+                href={`/detail/${product.id}`}
+                className="border rounded-lg p-4 shadow-sm hover:shadow-md transition block"
+              >
+                <img
+                  src={product.imageUrl || "/default-product-image.png"}
+                  alt={product.name}
+                  className="w-full h-48 object-cover rounded-lg"
+                />
+                <div className="mt-4">
+                  <h3 className="font-semibold text-lg">{product.name}</h3>
+                  <p className="text-sm text-gray-600 truncate">
+                    {product.description || "Tidak ada deskripsi"}
+                  </p>
 
-      {product.discount ? (
-        <div className="mt-2">
-          <p className="text-sm text-red-500 font-semibold">
-            Diskon{" "}
-            {product.discount.isPercentage
-              ? `${product.discount.amount}%`
-              : `Rp ${product.discount.amount.toLocaleString()}`}{" "}
-            tersedia!
-          </p>
-          <p className="text-lg font-bold text-green-600">
-            Rp {product.finalPrice.toLocaleString()}
-          </p>
-          <p className="text-sm text-gray-500 line-through">
-            Rp {product.price.toLocaleString()}
-          </p>
-          <p className="text-xs text-gray-400">
-            Berlaku s.d.{" "}
-            {new Date(product.discount.endDate).toLocaleDateString("id-ID")}
-          </p>
-        </div>
-      ) : (
-        <p className="mt-2 text-xl font-semibold text-gray-800">
-          Rp {product.price.toLocaleString()}
-        </p>
-      )}
+                  {product.discount ? (
+                    <div className="mt-2">
+                      <p className="text-sm text-red-500 font-semibold">
+                        Diskon{" "}
+                        {product.discount.isPercentage
+                          ? `${product.discount.amount}%`
+                          : `Rp ${product.discount.amount.toLocaleString()}`}{" "}
+                        tersedia!
+                      </p>
+                      <p className="text-lg font-bold text-green-600">
+                        Rp {product.finalPrice.toLocaleString()}
+                      </p>
+                      <p className="text-sm text-gray-500 line-through">
+                        Rp {product.price.toLocaleString()}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        Berlaku s.d.{" "}
+                        {new Date(product.discount.endDate).toLocaleDateString("id-ID")}
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="mt-2 text-xl font-semibold text-gray-800">
+                      Rp {product.price.toLocaleString()}
+                    </p>
+                  )}
 
-      <p className="text-sm text-gray-500 mt-1 italic">
-        Stok: {product.quantity}
-      </p>
-    </div>
-  </Link>
-))}
+                  <p className="text-sm text-gray-500 mt-1 italic">
+                    Stok: {product.quantity}
+                  </p>
+                </div>
+              </Link>
+            ))}
           </div>
 
-          {products.length > 4 && (
+          {products.length > 4 && store?.id && (
             <div className="mt-8 text-center">
-              <button
-                onClick={() => setShowAll((prev) => !prev)}
-                className="px-6 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition"
+              <Link
+                href={`/category?store=${store.id}`}
+                className="px-6 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition inline-block"
               >
-                {showAll ? "Tampilkan Lebih Sedikit" : "Lihat Semua Produk"}
-              </button>
+                Lihat Semua Produk
+              </Link>
             </div>
           )}
         </section>

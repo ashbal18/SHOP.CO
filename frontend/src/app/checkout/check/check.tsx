@@ -272,23 +272,58 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      {/* Reward */}
-      {reward && (
-        <div className="mb-6 space-y-3">
-          {totalPoints > 0 && (
-            <label>
-              <input type="checkbox" checked={usePoints} onChange={() => setUsePoints(!usePoints)} className="mr-2" />
-              Gunakan Poin ({totalPoints} poin - Diskon Rp{pointDiscount.toLocaleString()})
-            </label>
-          )}
-          {voucher && (
-            <label>
-              <input type="checkbox" checked={useVoucher} onChange={() => setUseVoucher(!useVoucher)} className="mr-2" />
-              Gunakan Voucher {voucher.code} - Diskon Rp{voucherDiscount.toLocaleString()}
-            </label>
-          )}
-        </div>
-      )}
+{reward && (
+  <div className="mb-8 grid md:grid-cols-2 gap-4">
+    {/* Tiket Poin */}
+    {totalPoints > 0 && (
+      <div className="relative bg-yellow-100 border border-yellow-400 rounded-xl p-4 shadow-lg overflow-hidden">
+        <span className="absolute w-6 h-6 bg-white rounded-full -left-3 top-1/2 transform -translate-y-1/2 border border-yellow-400"></span>
+        <span className="absolute w-6 h-6 bg-white rounded-full -right-3 top-1/2 transform -translate-y-1/2 border border-yellow-400"></span>
+
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={usePoints}
+            onChange={() => setUsePoints(!usePoints)}
+            className="accent-yellow-500"
+          />
+          <div>
+            <p className="text-lg font-bold text-yellow-700">Gunakan Poin</p>
+            <p className="text-sm text-gray-700">
+              {totalPoints} poin = Diskon Rp{pointDiscount.toLocaleString()}
+            </p>
+          </div>
+        </label>
+      </div>
+    )}
+
+    {/* Tiket Voucher */}
+    {voucher && (
+      <div className="relative bg-green-100 border border-green-400 rounded-xl p-4 shadow-lg overflow-hidden">
+        <span className="absolute w-6 h-6 bg-white rounded-full -left-3 top-1/2 transform -translate-y-1/2 border border-green-400"></span>
+        <span className="absolute w-6 h-6 bg-white rounded-full -right-3 top-1/2 transform -translate-y-1/2 border border-green-400"></span>
+
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={useVoucher}
+            onChange={() => setUseVoucher(!useVoucher)}
+            className="accent-green-500"
+          />
+          <div>
+            <p className="text-lg font-bold text-green-700">
+              Voucher {voucher.code}
+            </p>
+            <p className="text-sm text-gray-700">
+              {voucher.percentage}% (max Rp{voucher.maxDiscount.toLocaleString()}) - Diskon Rp{voucherDiscount.toLocaleString()}
+            </p>
+          </div>
+        </label>
+      </div>
+    )}
+  </div>
+)}
+
 
       {/* Pengiriman */}
       {shippingData &&
