@@ -8,12 +8,19 @@ interface Category {
   name: string;
 }
 
+interface Store {
+  id: string;
+  name: string;
+}
+
 interface Product {
   id: string;
   name: string;
+  description?: string;
   categoryId: string;
   price: number;
-  // bisa tambah field lain kalau ada
+  quantity?: number;
+  storeId: string;
 }
 
 interface EditProductModalProps {
@@ -22,6 +29,8 @@ interface EditProductModalProps {
   productToEdit: Product | null;
   onUpdate: (updatedProduct: Product) => void;
   categories: Category[];
+  stores: Store[];
+  token: string;
 }
 
 export default function EditProductModal({
@@ -30,24 +39,29 @@ export default function EditProductModal({
   productToEdit,
   onUpdate,
   categories,
+  stores,
+  token,
 }: EditProductModalProps) {
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [price, setPrice] = useState<number | "">("");
+  const [quantity, setQuantity] = useState<number | "">("");
+  const [selectedStoreId, setSelectedStoreId] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Set form data saat productToEdit berubah
   useEffect(() => {
     if (productToEdit) {
       setName(productToEdit.name);
+      setDescription(productToEdit.description || "");
       setCategoryId(productToEdit.categoryId);
       setPrice(productToEdit.price);
+      setQuantity(productToEdit.quantity || "");
+      setSelectedStoreId(productToEdit.storeId);
       setImageFile(null);
     }
   }, [productToEdit]);
-
-  if (!open || !productToEdit) return null;
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -58,7 +72,14 @@ export default function EditProductModal({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (!name || !categoryId || !price || price <= 0) {
+    if (
+      !name.trim() ||
+      !description.trim() ||
+      !categoryId ||
+      !price ||
+      !quantity ||
+      !selectedStoreId
+    ) {
       alert("Mohon isi semua data dengan benar");
       return;
     }
@@ -66,29 +87,33 @@ export default function EditProductModal({
     try {
       setLoading(true);
       const formData = new FormData();
-      formData.append("name", name);
+      formData.append("name", name.trim());
+      formData.append("description", description.trim());
       formData.append("categoryId", categoryId);
       formData.append("price", price.toString());
+      formData.append("quantity", quantity.toString());
+      formData.append("storeId", selectedStoreId);
       if (imageFile) {
         formData.append("image", imageFile);
       }
 
-      const res = await axios.put(`/product/${productToEdit.id}`, formData, {
+      const res = await axios.put(`/product/${productToEdit?.id}`, formData, {
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
         },
       });
 
-      const updatedProduct: Product = res.data;
-      onUpdate(updatedProduct);
+      onUpdate(res.data);
       onClose();
     } catch (error) {
-      console.log("Error updating product:", error);
+      console.error("Error updating product:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  if (!open || !productToEdit) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -99,7 +124,7 @@ export default function EditProductModal({
       >
         <h2 className="text-xl font-semibold mb-4">Edit Produk</h2>
 
-        <label className="block mb-2">
+        <label className="block mb-4">
           Nama Produk
           <input
             type="text"
@@ -107,10 +132,21 @@ export default function EditProductModal({
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            autoFocus
           />
         </label>
 
-        <label className="block mb-2">
+        <label className="block mb-4">
+          Deskripsi Produk
+          <textarea
+            className="w-full border rounded px-2 py-1"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+        </label>
+
+        <label className="block mb-4">
           Kategori
           <select
             className="w-full border rounded px-2 py-1"
@@ -127,7 +163,24 @@ export default function EditProductModal({
           </select>
         </label>
 
-        <label className="block mb-2">
+        <label className="block mb-4">
+          Pilih Store
+          <select
+            className="w-full border rounded px-2 py-1"
+            value={selectedStoreId}
+            onChange={(e) => setSelectedStoreId(e.target.value)}
+            required
+          >
+            <option value="">-- Pilih store --</option>
+            {stores.map((store) => (
+              <option key={store.id} value={store.id}>
+                {store.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="block mb-4">
           Harga
           <input
             type="number"
@@ -140,15 +193,27 @@ export default function EditProductModal({
         </label>
 
         <label className="block mb-4">
-          Ganti Gambar Produk (kosongkan jika tidak ganti)
+          Stok
+          <input
+            type="number"
+            className="w-full border rounded px-2 py-1"
+            value={quantity}
+            min={0}
+            onChange={(e) => setQuantity(Number(e.target.value))}
+            required
+          />
+        </label>
+
+        <label className="block mb-6">
+          Ganti Gambar Produk (biarkan kosong jika tidak ingin mengganti)
           <input type="file" accept="image/*" onChange={handleFileChange} />
         </label>
 
         <div className="flex justify-end space-x-3">
           <button
             type="button"
-            onClick={onClose}
             className="px-4 py-2 bg-gray-300 rounded"
+            onClick={onClose}
             disabled={loading}
           >
             Batal

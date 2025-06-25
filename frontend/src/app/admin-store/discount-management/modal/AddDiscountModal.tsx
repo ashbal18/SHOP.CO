@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { X } from "lucide-react";
-import axios from "@/lib/axios";
 import { useSession } from "next-auth/react";
+import axiosInstance from "@/lib/axios";
+import axios from "axios"; // untuk `isAxiosError`
 
 interface Product {
   id: string;
@@ -17,10 +18,12 @@ interface Store {
   name: string;
 }
 
+type DiscountType = "MANUAL" | "MIN_PURCHASE" | "BUY_ONE_GET_ONE";
+
 interface Discount {
   id: string;
   name: string;
-  type: "MANUAL" | "MIN_PURCHASE" | "BUY_ONE_GET_ONE";
+  type: DiscountType;
   amount: number;
   isPercentage: boolean;
   startDate: string;
@@ -43,6 +46,21 @@ interface Props {
   onDiscountAdded: (discount: Discount) => void;
 }
 
+interface DiscountPayload {
+  name: string;
+  type: DiscountType;
+  amount: number;
+  isPercentage: boolean;
+  startDate: string;
+  endDate: string;
+  productId: string;
+  storeId: string;
+  minPurchase?: number;
+  maxDiscount?: number;
+  buyQuantity?: number;
+  getQuantity?: number;
+}
+
 export default function AddDiscountModal({
   isOpen,
   onClose,
@@ -52,7 +70,7 @@ export default function AddDiscountModal({
   const user = session?.user as SessionUser;
 
   const [name, setName] = useState("");
-  const [type, setType] = useState<"MANUAL" | "MIN_PURCHASE" | "BUY_ONE_GET_ONE">("MANUAL");
+  const [type, setType] = useState<DiscountType>("MANUAL");
   const [amount, setAmount] = useState<number>(0);
   const [isPercentage, setIsPercentage] = useState(false);
   const [minPurchase, setMinPurchase] = useState<number>(0);
@@ -68,75 +86,76 @@ export default function AddDiscountModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch stores saat modal dibuka
+  // Fetch toko
   useEffect(() => {
     const accessToken = session?.accessToken;
     if (!accessToken || !isOpen) return;
 
     const fetchStores = async () => {
       try {
-        const res = await axios.get<Store[]>("/store", {
+        const res = await axiosInstance.get<Store[]>("/store", {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
-        setStores(res.data || []);
+        const storeData = res.data || [];
+        setStores(storeData);
+
         if (user?.role === "ADMIN" && user?.storeId) {
-          const userStore = res.data.find((store) => store.id === user.storeId);
-          if (userStore) setStoreId(userStore.id);
+          setStoreId(user.storeId);
         }
       } catch (err) {
-        console.error("Gagal mengambil data toko:", err);
+        console.error("Gagal mengambil toko:", err);
       }
     };
 
     fetchStores();
   }, [isOpen, session, user]);
 
-  // Fetch produk berdasarkan storeId
+  // Fetch produk toko
   useEffect(() => {
     const accessToken = session?.accessToken;
     if (!accessToken || !storeId) return;
 
-    const fetchProductsByStore = async () => {
+    const fetchProducts = async () => {
       try {
-        const res = await axios.get<Product[]>(`/product/store/${storeId}`, {
+        const res = await axiosInstance.get<Product[]>(`/product/store/${storeId}`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         setProducts(res.data || []);
       } catch (err) {
-        console.error("Gagal mengambil produk dari toko:", err);
+        console.error("Gagal mengambil produk:", err);
       }
     };
 
-    fetchProductsByStore();
+    fetchProducts();
   }, [storeId, session]);
 
   const handleSubmit = async () => {
     setLoading(true);
     setError(null);
 
+    const payload: DiscountPayload = {
+      name,
+      type,
+      amount,
+      isPercentage,
+      startDate,
+      endDate,
+      productId: selectedProduct,
+      storeId: storeId || user?.storeId || "",
+    };
+
+    if (type === "MIN_PURCHASE") {
+      payload.minPurchase = minPurchase;
+      payload.maxDiscount = maxDiscount;
+    }
+
+    if (type === "BUY_ONE_GET_ONE") {
+      payload.buyQuantity = buyQuantity;
+      payload.getQuantity = getQuantity;
+    }
+
     try {
-      const payload: any = {
-        name,
-        type,
-        amount,
-        isPercentage,
-        startDate,
-        endDate,
-        productId: selectedProduct,
-        storeId: storeId || user?.storeId,
-      };
-
-      if (type === "MIN_PURCHASE") {
-        payload.minPurchase = minPurchase;
-        payload.maxDiscount = maxDiscount;
-      }
-
-      if (type === "BUY_ONE_GET_ONE") {
-        payload.buyQuantity = buyQuantity;
-        payload.getQuantity = getQuantity;
-      }
-
-      const res = await axios.post<Discount>("/discounts", payload, {
+      const res = await axiosInstance.post<Discount>("/discounts", payload, {
         headers: {
           Authorization: `Bearer ${session?.accessToken}`,
         },
@@ -145,9 +164,13 @@ export default function AddDiscountModal({
       onDiscountAdded(res.data);
       onClose();
       resetForm();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Gagal membuat diskon:", err);
-      setError(err.response?.data?.error || "Terjadi kesalahan");
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.error || "Terjadi kesalahan saat menyimpan.");
+      } else {
+        setError("Terjadi kesalahan tidak diketahui.");
+      }
     } finally {
       setLoading(false);
     }
@@ -193,7 +216,7 @@ export default function AddDiscountModal({
             <select
               className="w-full border px-3 py-2 rounded"
               value={type}
-              onChange={(e) => setType(e.target.value as any)}
+              onChange={(e) => setType(e.target.value as DiscountType)}
             >
               <option value="MANUAL">Manual</option>
               <option value="MIN_PURCHASE">Minimal Pembelian</option>

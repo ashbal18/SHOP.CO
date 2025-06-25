@@ -22,6 +22,7 @@ const rajaongkir_router_1 = require("./routers/rajaongkir.router");
 const transaction_router_1 = require("./routers/transaction.router");
 const product2_router_1 = require("./routers/product2.router");
 const user_order_router_1 = require("./routers/user-order.router");
+const salesreport_router_1 = require("./routers/salesreport.router");
 // import { RajaOngkirRouter } from "./routers/rajaongkir.router";
 //import cron from "node-cron";
 // import { OrderRouter } from "./routers/order.router";
@@ -63,6 +64,8 @@ const rajaongkirRouter = new rajaongkir_router_1.RajaOngkirRouter();
 app.use("/api/rajaongkir", rajaongkirRouter.getRouter());
 const transactionRouter = new transaction_router_1.TransactionRouter();
 app.use("/api/transaction", transactionRouter.getRouter());
+const salesReportRouter = new salesreport_router_1.SalesReportRouter();
+app.use("/api/report", salesReportRouter.getRouter());
 // scheduler
 // cron.schedule("0 7 * * 6,0", () => {
 //   console.log("Hello World");

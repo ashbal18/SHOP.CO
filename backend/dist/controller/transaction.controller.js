@@ -48,7 +48,6 @@ class TransactionController {
                 if (!userId || !storeId || !items || !totalAmount || !shippingAddress) {
                     res.status(400).json({ message: "Data tidak lengkap" });
                 }
-                // Ambil alamat lengkap dari Address
                 const address = yield prisma_1.default.address.findUnique({
                     where: { address_id: shippingAddress },
                 });
@@ -88,7 +87,7 @@ class TransactionController {
                         description: `Pembayaran Order #${order.id}`,
                         currency: "IDR",
                         reminderTime: 1,
-                        successRedirectUrl: "https://abd4-182-253-123-60.ngrok-free.app/",
+                        successRedirectUrl: "https://shop-co-frontend-one.vercel.app/",
                     };
                     const invoice = yield xendit_1.default.Invoice.createInvoice({ data: invoiceData });
                     yield txn.order.update({

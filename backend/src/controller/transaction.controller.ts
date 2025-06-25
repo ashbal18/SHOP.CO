@@ -31,15 +31,11 @@ export class TransactionController {
 
   async create(req: Request, res: Response) {
   try {
-    const { storeId, shippingAddress, items, totalAmount, voucherId, poinId, pointUsed } = req.body;
+    const { storeId, shippingAddress, items, totalAmount, voucherId } = req.body;
     const userId = req.user?.id;
 
-    let message = "";
-    let statusCode = 200;
-
     if (!userId || !storeId || !items || !totalAmount || !shippingAddress) {
-      message = "Data tidak lengkap";
-      statusCode = 400;
+      res.status(400).json({ message: "Data tidak lengkap" });
     }
 
     const address = await prisma.address.findUnique({
@@ -47,47 +43,20 @@ export class TransactionController {
     });
 
     if (!address) {
-      message = "Alamat tidak ditemukan";
-      statusCode = 404;
+      res.status(404).json({ message: "Alamat tidak ditemukan" });
     }
 
-    if (message) {
-      res.status(statusCode).json({ message });
-      return;
-    }
-
-    if (!address) {
-      throw new Error("Alamat tidak ditemukan");
-    }
-    const fullAddress = `${address.address_name}, ${address.city}, ${address.province}`;
+    const fullAddress = `${address?.address_name}, ${address?.city}, ${address?.province}`;
 
     await prisma.$transaction(async (txn) => {
-      // Validasi Poin
-      let usedPoin = null;
-      if (poinId) {
-        usedPoin = await txn.poin.findFirst({
-          where: {
-            id: poinId,
-            userId: userId?.toString(),
-            used: false,
-            expiredAt: { gt: new Date() },
-          },
-        });
-
-        if (!usedPoin || usedPoin.amount < pointUsed) {
-          throw new Error("Poin tidak valid atau jumlah tidak mencukupi");
-        }
-      }
-
       const order = await txn.order.create({
         data: {
-          userId: userId!.toString(),
+          userId: String(userId),
           storeId,
           shippingAddress: fullAddress,
           totalAmount,
           status: "PENDING_PAYMENT",
           voucherId,
-          poinId,
           expiredAt: new Date(Date.now() + 60 * 60 * 1000),
           items: {
             create: items.map((item: any) => ({
@@ -102,13 +71,6 @@ export class TransactionController {
       if (voucherId) {
         await txn.voucher.update({
           where: { id: voucherId },
-          data: { used: true },
-        });
-      }
-
-      if (poinId) {
-        await txn.poin.update({
-          where: { id: poinId },
           data: { used: true },
         });
       }
@@ -137,7 +99,6 @@ export class TransactionController {
     res.status(500).json({ message: "Gagal membuat transaksi", error: err });
   }
 }
-
 
  async updateStatus(req: Request, res: Response) {
     try {

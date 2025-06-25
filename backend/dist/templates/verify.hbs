@@ -1,18 +1,60 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>
-      .btn { padding: 4px 10px; background-color: blue; color: white; }
-    </style>
     <title>Verification Email</title>
   </head>
-  <body>
-    <div>
-      <h1 style="color: teal;">Hello {{username}}</h1>
-      <h2>Welcome To Customer</h2>
-      <p>please verify your account, click button!</p>
-      <a href={{link}} target="_blank" class="btn">Verify</a>
-    </div>
+  <body style="margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #f4f4f4;">
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+      <tr>
+        <td align="center" style="padding: 40px 0;">
+          <table width="600" style="background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <tr>
+              <td align="center" style="padding-bottom: 20px;">
+                <h1 style="color: #2c3e50;">Hi, {{name}}</h1>
+                <p style="font-size: 16px; color: #555;">Welcome to <strong>Shop.co</strong> 🎉</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align: center; padding-bottom: 30px;">
+                <p style="font-size: 15px; color: #666;">
+                  Terima kasih telah mendaftar. Silakan verifikasi akun kamu untuk mulai belanja.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td align="center">
+                <a href="{{link}}" target="_blank" style="
+                  background-color: #4f46e5;
+                  color: #ffffff;
+                  padding: 12px 24px;
+                  border-radius: 6px;
+                  text-decoration: none;
+                  font-weight: bold;
+                  display: inline-block;
+                ">
+                  Verifikasi Akun Sekarang
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="padding-top: 40px;">
+                <p style="font-size: 13px; color: #999;">
+                  Jika kamu tidak merasa mendaftar, silakan abaikan email ini.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="padding-top: 20px;">
+                <p style="font-size: 13px; color: #bbb;">
+                  &copy; {{year}} Shop.co - All rights reserved.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>

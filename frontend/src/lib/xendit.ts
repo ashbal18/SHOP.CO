@@ -1,8 +1,7 @@
-// src/helpers/xendit.ts
 import { Xendit } from "xendit-node";
 
 const xendit = new Xendit({
-  secretKey: process.env.XENDIT_SECRET_KEY!, // pastikan sudah diset di .env
+  secretKey: process.env.XENDIT_SECRET_KEY!, 
 });
 
 const { Invoice } = xendit;

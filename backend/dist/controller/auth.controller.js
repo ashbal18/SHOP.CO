@@ -36,9 +36,7 @@ class AuthController {
                     // Hash the password
                     const salt = yield (0, bcrypt_1.genSalt)(10);
                     const hashedPass = yield (0, bcrypt_1.hash)(password, salt);
-                    // Generate a unique referral code for the new user
                     const newReferralCode = Math.random().toString(36).substring(2, 10);
-                    // Create the new user
                     const user = yield prisma_1.default.user.create({
                         data: {
                             name,
@@ -51,23 +49,18 @@ class AuthController {
                     const payload = { id: user.id, role: user.roles };
                     const token = (0, jsonwebtoken_1.sign)(payload, process.env.KEY_JWT, { expiresIn: "10m" });
                     const link = `${process.env.URL_FE}/verify/${token}`;
-                    // Check if the user provided a valid referral code
                     if (referralCode) {
-                        // Find the referrer user (User A)
                         const referrer = yield prisma_1.default.user.findUnique({
                             where: { referralCode },
                         });
-                        // If referrer exists, give points to the referrer and voucher to the new user
                         if (referrer) {
-                            // Add points to the referrer (User A)
                             yield prisma_1.default.poin.create({
                                 data: {
                                     userId: referrer.id,
-                                    amount: 10, // Assign 10 points for the referral
-                                    expiredAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // Set points expiry (1 year)
+                                    amount: 10,
+                                    expiredAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
                                 },
                             });
-                            // Create a voucher for the new user (User B)
                             yield prisma_1.default.voucher.create({
                                 data: {
                                     userId: user.id,
@@ -80,7 +73,6 @@ class AuthController {
                             });
                         }
                     }
-                    // Determine the email template based on the user's role
                     let templateName = "";
                     if (user.roles === "ADMIN") {
                         templateName = "verifyAdmin.hbs";
@@ -89,7 +81,7 @@ class AuthController {
                         templateName = "verifySuperAdmin.hbs";
                     }
                     else {
-                        templateName = "verify.hbs"; // Default to customer template
+                        templateName = "verify.hbs";
                     }
                     const templatePath = path_1.default.join(__dirname, "../templates", templateName);
                     const templateSource = fs_1.default.readFileSync(templatePath, "utf-8");
@@ -101,7 +93,6 @@ class AuthController {
                         subject: "Verification Email",
                         html,
                     });
-                    // Send the success response after everything is done
                     res.status(201).send({ message: "User created ✅" });
                 }
             }
@@ -110,7 +101,6 @@ class AuthController {
                 errorMessage = "Registration failed";
                 statusCode = 400;
             }
-            // If any error occurred, send the error message
             if (errorMessage) {
                 res.status(statusCode).send({ message: errorMessage });
             }
@@ -237,18 +227,13 @@ class AuthController {
                 }
                 else {
                     const { password, confirmPassword } = req.body;
-                    // Check if passwords match
                     if (password !== confirmPassword) {
-                        // Send response when passwords do not match
                         res.status(400).send({ message: "Passwords do not match" });
                     }
                     else {
-                        // Decode the token to get the user's email
                         const decoded = (0, jsonwebtoken_1.verify)(token, process.env.KEY_JWT);
-                        // Find the user based on email decoded from the token
                         const user = yield prisma_1.default.user.findUnique({ where: { email: decoded.email } });
                         if (!user) {
-                            // Send response if user does not exist
                             res.status(400).send({ message: "Invalid password reset token" });
                         }
                         else {
@@ -277,36 +262,38 @@ class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { email, name, avatar } = req.body;
+                // Validasi data wajib
                 if (!email || !name) {
                     res.status(400).json({ message: "Missing required Google user data" });
                 }
                 let user = yield prisma_1.default.user.findUnique({ where: { email } });
-                // Jika user belum terdaftar, lakukan register
+                // Jika belum terdaftar, buat akun baru
                 if (!user) {
                     user = yield prisma_1.default.user.create({
                         data: {
                             name,
                             email,
-                            password: Math.random().toString(36).slice(-8), // Random password
+                            password: Math.random().toString(36).slice(-8), // Password acak
                             isVerify: true,
-                            roles: "CUSTOMER", // Pastikan role CUSTOMER
+                            roles: "CUSTOMER",
                             avatar,
                             referralCode: Math.random().toString(36).substring(2, 10),
                         },
                     });
                 }
-                // Jika user sudah ada tapi role tidak ada, update jadi CUSTOMER
+                // Jika user sudah terdaftar tapi belum punya role
                 if (!user.roles) {
                     user = yield prisma_1.default.user.update({
                         where: { email },
                         data: { roles: "CUSTOMER" },
                     });
                 }
-                // Buat JWT token
+                // Generate JWT token
                 const payload = { id: user.id, role: user.roles };
                 const access_token = (0, jsonwebtoken_1.sign)(payload, process.env.KEY_JWT, {
                     expiresIn: "1h",
                 });
+                // Sukses response
                 res.status(200).json({
                     message: "Login with Google successful",
                     data: {
@@ -321,7 +308,7 @@ class AuthController {
                 });
             }
             catch (err) {
-                console.error(err);
+                console.error("[Google Auth Error]", err);
                 res.status(500).json({ message: "Google login failed", error: err });
             }
         });

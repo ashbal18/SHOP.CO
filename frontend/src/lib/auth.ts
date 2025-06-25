@@ -12,9 +12,16 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         return null;
       },
     }),
-      Google({
+    Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "select_account", // ✅ memaksa pengguna memilih akun setiap login
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
     }),
   ],
 
@@ -28,36 +35,35 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   },
 
   callbacks: {
-  async jwt({ token, user }) {
-    if (user) {
-      token.id = user.id;
-      token.name = user.name;
-      token.email = user.email;
-      token.role = user.role;
-      token.avatar = user.avatar;
-      token.referralCode = user.referralCode;
-      token.referredById = user.referredById;
-      token.accessToken = user.accessToken;
-      token.storeId = user.storeId;
-    }
-    return token;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        token.role = user.role;
+        token.avatar = user.avatar;
+        token.referralCode = user.referralCode;
+        token.referredById = user.referredById;
+        token.accessToken = user.accessToken;
+        token.storeId = user.storeId;
+      }
+      return token;
+    },
+
+    async session({ token, session }: { token: JWT; session: Session }) {
+      session.user = {
+        id: token.id as string,
+        name: token.name as string,
+        email: token.email as string,
+        role: token.role as string,
+        referralCode: token.referralCode as string,
+        referredById: token.referredById as string,
+        avatar: token.avatar as string,
+        storeId: token.storeId as string,
+      };
+
+      session.accessToken = token.accessToken as string;
+      return session;
+    },
   },
-
-
-   async session({ token, session }: { token: JWT; session: Session }) {
-    session.user = {
-      id: token.id as string,
-      name: token.name as string,
-      email: token.email as string,
-      role: token.role as string,
-      referralCode: token.referralCode as string,
-      referredById: token.referredById as string,
-      avatar: token.avatar as string,
-      storeId: token.storeId as string,
-    };
-
-    session.accessToken = token.accessToken as string;
-    return session;
-  },
-},
 });

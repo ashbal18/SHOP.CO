@@ -163,9 +163,7 @@ class DiscountController {
                 }
                 if (type === "BUY_ONE_GET_ONE" &&
                     (buyQuantity == null || getQuantity == null)) {
-                    res
-                        .status(400)
-                        .json({ error: "Jumlah beli dan gratis harus diisi." });
+                    res.status(400).json({ error: "Jumlah beli dan gratis harus diisi." });
                 }
                 const updatedDiscount = yield prisma_1.default.discount.update({
                     where: { id },
@@ -247,15 +245,18 @@ class DiscountController {
                 break;
             case "MIN_PURCHASE":
                 if (discount.isPercentage) {
-                    finalPrice = price - (price * discount.amount) / 100;
+                    const rawDiscount = (price * discount.amount) / 100;
+                    const limitedDiscount = discount.maxDiscount != null
+                        ? Math.min(rawDiscount, discount.maxDiscount)
+                        : rawDiscount;
+                    finalPrice = price - limitedDiscount;
                 }
                 else {
                     finalPrice = price - discount.amount;
                 }
                 break;
             case "BUY_ONE_GET_ONE":
-                // Tidak memengaruhi harga unit (umumnya dihitung di keranjang pembelian)
-                finalPrice = price;
+                finalPrice = price; // tidak ada perubahan harga satuan
                 break;
         }
         return Math.max(0, Math.round(finalPrice));
