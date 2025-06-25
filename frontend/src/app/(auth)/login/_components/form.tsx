@@ -35,7 +35,7 @@ export default function FormLogin() {
       const user = data.data;
 
       const res = await signIn("credentials", {
-        redirect: false, 
+        redirect: false,
         id: user.id,
         email: user.email,
         password: value.password,
@@ -46,13 +46,13 @@ export default function FormLogin() {
         role: user.role,
         storeId: user.storeId ?? null,
         accessToken: data.access_token,
-        callbackUrl: "/", 
+        callbackUrl: "/",
       });
 
       if (res?.ok && res.url) {
         toast.success(data.message);
         action.resetForm();
-        window.location.href = res.url; 
+        window.location.href = res.url;
       } else {
         toast.error("Email atau password salah");
       }
@@ -66,6 +66,7 @@ export default function FormLogin() {
     try {
       const googleResponse = await signIn("google", {
         redirect: false,
+        prompt: "select_account", // 👉 Tambahkan agar selalu tampil popup pilih akun
       });
 
       if (!googleResponse || !googleResponse.ok) {
@@ -73,8 +74,8 @@ export default function FormLogin() {
       }
 
       const session = await fetch("/api/auth/session").then((res) => res.json());
-
       const googleUser = session?.user;
+
       if (!googleUser || !googleUser.email || !googleUser.name) {
         throw new Error("Data user Google tidak ditemukan.");
       }
@@ -87,6 +88,7 @@ export default function FormLogin() {
 
       const user = data.data;
 
+      // Logout sesi Google sebelum login ulang pakai credentials
       await signOut({ redirect: false });
 
       const res = await signIn("credentials", {
@@ -99,6 +101,7 @@ export default function FormLogin() {
         referralCode: user.referralCode ?? "",
         referralBy: user.referredBy ?? "",
         role: user.role,
+        storeId: user.storeId ?? null,
         accessToken: data.access_token,
         callbackUrl: "/",
       });
@@ -117,20 +120,18 @@ export default function FormLogin() {
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen">
+      {/* Kiri */}
       <div className="lg:w-1/2 bg-gradient-to-r from-gray-300 p-10 flex flex-col justify-center items-center text-white">
         <h1 className="text-4xl text-black font-semibold mb-4">Welcome back</h1>
         <p className="text-lg text-center mb-8 text-black">
           Temukan berbagai koleksi baju terbaru di toko baju Shop.co, belanja dengan mudah dan aman, dan dapatkan penawaran spesial setiap hari!
         </p>
-        <Image src="/main1.png" alt="Logo" width={600} height={200} />
+        <Image src="/main1.png" alt="Banner" width={600} height={200} />
       </div>
 
+      {/* Kanan */}
       <div className="lg:w-1/2 p-10 flex justify-center items-center">
-        <Formik
-          initialValues={initialValues}
-          validationSchema={LoginSchema}
-          onSubmit={onLogin}
-        >
+        <Formik initialValues={initialValues} validationSchema={LoginSchema} onSubmit={onLogin}>
           {(props: FormikProps<ILoginForm>) => {
             const { touched, errors, isSubmitting } = props;
             return (
@@ -169,7 +170,7 @@ export default function FormLogin() {
                 )}
 
                 <button
-                  className="text-white py-2 px-3 mt-2 rounded-md bg-blue-500 disabled:bg-gray-400 disabled:cursor-none text-sm"
+                  className="text-white py-2 px-3 mt-2 rounded-md bg-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm"
                   type="submit"
                   disabled={isSubmitting}
                 >
@@ -188,11 +189,11 @@ export default function FormLogin() {
                   className="flex items-center justify-center gap-2 py-2 px-3 rounded-md border border-gray-300 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   <FcGoogle size={20} />
-                  Login with Google
+                  Login dengan Google
                 </button>
 
                 <div className="text-center mt-4">
-                  <span className="text-sm text-gray-500">Dont have an account? </span>
+                  <span className="text-sm text-gray-500">Don't have an account? </span>
                   <Link href="/register" className="text-blue-500 hover:underline">Register here</Link>
                 </div>
                 <div className="text-center mt-4">
