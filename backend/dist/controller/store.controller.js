@@ -186,7 +186,6 @@ class StoreController {
             }
         });
     }
-    // Delete Store
     deleteStore(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

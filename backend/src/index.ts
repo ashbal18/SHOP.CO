@@ -17,6 +17,9 @@ import { RajaOngkirRouter } from "./routers/rajaongkir.router";
 import { TransactionRouter } from "./routers/transaction.router";
 import { ProductRouter2 } from "./routers/product2.router";
 import { userorderRouter } from "./routers/user-order.router";
+import { SalesReportRouter } from "./routers/salesreport.router";
+
+
 
 
 
@@ -81,6 +84,12 @@ app.use("/api/rajaongkir", rajaongkirRouter.getRouter());
 
 const transactionRouter = new TransactionRouter();
 app.use("/api/transaction", transactionRouter.getRouter());
+
+const salesReportRouter = new SalesReportRouter();
+app.use("/api/report", salesReportRouter.getRouter());
+
+
+
 
 
 

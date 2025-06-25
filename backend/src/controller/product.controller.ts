@@ -23,63 +23,71 @@ const haversineDistance = (
   return R * c; // Distance in kilometers
 };
 export class ProductController {
-  createProduct = async (req: Request, res: Response) => {
-    try {
-      const { name, description, price, categoryId, storeId, quantity } =
-        req.body;
+ createProduct = async (req: Request, res: Response) => {
+  try {
+    const { name, description, price, categoryId, storeId, quantity } = req.body;
 
-      if (!name || !description || !price || !categoryId || !storeId) {
-        res.status(400).json({
-          error:
-            "Missing required fields: name, description, price, categoryId, storeId",
-        });
-      }
-
-      const priceInt = parseInt(price);
-      const quantityInt = parseInt(quantity ?? "0");
-
-      if (isNaN(priceInt) || priceInt < 0) {
-        res
-          .status(400)
-          .json({ error: "Price must be a valid positive integer" });
-      }
-
-      if (isNaN(quantityInt) || quantityInt < 0) {
-        res
-          .status(400)
-          .json({ error: "Quantity must be a valid non-negative integer" });
-      }
-
-      let imageUrl = "";
-      if (req.file) {
-        const result = await cloudinaryUpload(req.file, "products");
-        imageUrl = result.secure_url;
-      }
-
-      const newProduct = await prisma.product.create({
-        data: {
-          name,
-          description,
-          price: priceInt,
-          imageUrl,
-          categoryId,
-        },
+    if (!name || !description || !price || !categoryId || !storeId) {
+       res.status(400).json({
+        error: "Missing required fields: name, description, price, categoryId, storeId",
       });
-
-      await prisma.productStock.create({
-        data: {
-          productId: newProduct.id,
-          storeId,
-          quantity: quantityInt,
-        },
-      });
-
-      res.status(201).json(newProduct);
-    } catch (error) {
-      console.error("Error creating product:", error);
-      res.status(500).json({ error: "Internal server error" });
     }
-  };
+
+    const priceInt = parseInt(price);
+    const quantityInt = parseInt(quantity ?? "0");
+
+    if (isNaN(priceInt) || priceInt < 0) {
+       res.status(400).json({ error: "Price must be a valid positive integer" });
+    }
+
+    if (isNaN(quantityInt) || quantityInt < 0) {
+       res.status(400).json({ error: "Quantity must be a valid non-negative integer" });
+    }
+
+    let imageUrl = "";
+    if (req.file) {
+      const result = await cloudinaryUpload(req.file, "products");
+      imageUrl = result.secure_url;
+    }
+
+    // ✅ Buat produk terlebih dahulu
+    const newProduct = await prisma.product.create({
+      data: {
+        name,
+        description,
+        price: priceInt,
+        imageUrl,
+        categoryId,
+      },
+    });
+
+    // ✅ Buat stok awal
+    const newStock = await prisma.productStock.create({
+      data: {
+        productId: newProduct.id,
+        storeId,
+        quantity: quantityInt,
+      },
+    });
+
+    // ✅ Catat riwayat stok (StockHistory)
+    await prisma.stockHistory.create({
+      data: {
+        storeId,
+        productId: newProduct.id,
+        type: "ADD", // enum: ADD, REMOVE, ADJUST
+        quantity: quantityInt,
+        description: "Stok awal saat produk dibuat",
+      },
+    });
+
+     res.status(201).json(newProduct);
+  } catch (error) {
+    console.error("Error creating product:", error);
+     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 
   updateProduct = async (req: Request, res: Response) => {
     try {

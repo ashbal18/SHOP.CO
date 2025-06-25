@@ -52,11 +52,13 @@ export default function AddDiscountModal({
   const user = session?.user as SessionUser;
 
   const [name, setName] = useState("");
-  const [type, setType] = useState<
-    "MANUAL" | "MIN_PURCHASE" | "BUY_ONE_GET_ONE"
-  >("MANUAL");
+  const [type, setType] = useState<"MANUAL" | "MIN_PURCHASE" | "BUY_ONE_GET_ONE">("MANUAL");
   const [amount, setAmount] = useState<number>(0);
   const [isPercentage, setIsPercentage] = useState(false);
+  const [minPurchase, setMinPurchase] = useState<number>(0);
+  const [maxDiscount, setMaxDiscount] = useState<number>(0);
+  const [buyQuantity, setBuyQuantity] = useState<number>(0);
+  const [getQuantity, setGetQuantity] = useState<number>(0);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<string>("");
@@ -113,29 +115,39 @@ export default function AddDiscountModal({
     setError(null);
 
     try {
-      const res = await axios.post<Discount>(
-        "/discounts",
-        {
-          name,
-          type,
-          amount,
-          isPercentage,
-          startDate,
-          endDate,
-          productId: selectedProduct,
-          storeId: storeId || user?.storeId,
+      const payload: any = {
+        name,
+        type,
+        amount,
+        isPercentage,
+        startDate,
+        endDate,
+        productId: selectedProduct,
+        storeId: storeId || user?.storeId,
+      };
+
+      if (type === "MIN_PURCHASE") {
+        payload.minPurchase = minPurchase;
+        payload.maxDiscount = maxDiscount;
+      }
+
+      if (type === "BUY_ONE_GET_ONE") {
+        payload.buyQuantity = buyQuantity;
+        payload.getQuantity = getQuantity;
+      }
+
+      const res = await axios.post<Discount>("/discounts", payload, {
+        headers: {
+          Authorization: `Bearer ${session?.accessToken}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${session?.accessToken}`,
-          },
-        }
-      );
+      });
 
       onDiscountAdded(res.data);
       onClose();
       resetForm();
-        } catch {
+    } catch (err: any) {
+      console.error("Gagal membuat diskon:", err);
+      setError(err.response?.data?.error || "Terjadi kesalahan");
     } finally {
       setLoading(false);
     }
@@ -145,6 +157,10 @@ export default function AddDiscountModal({
     setName("");
     setAmount(0);
     setIsPercentage(false);
+    setMinPurchase(0);
+    setMaxDiscount(0);
+    setBuyQuantity(0);
+    setGetQuantity(0);
     setStartDate("");
     setEndDate("");
     setSelectedProduct("");
@@ -153,11 +169,7 @@ export default function AddDiscountModal({
   if (!isOpen) return null;
 
   return (
-    <Dialog
-      open={isOpen}
-      onClose={onClose}
-      className="fixed z-50 inset-0 overflow-y-auto"
-    >
+    <Dialog open={isOpen} onClose={onClose} className="fixed z-50 inset-0 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen px-4">
         <Dialog.Panel className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg relative">
           <button
@@ -167,9 +179,7 @@ export default function AddDiscountModal({
             <X className="h-5 w-5" />
           </button>
 
-          <Dialog.Title className="text-xl font-bold mb-4">
-            Tambah Diskon
-          </Dialog.Title>
+          <Dialog.Title className="text-xl font-bold mb-4">Tambah Diskon</Dialog.Title>
 
           <div className="space-y-4 max-h-[80vh] overflow-y-auto">
             <input
@@ -183,14 +193,7 @@ export default function AddDiscountModal({
             <select
               className="w-full border px-3 py-2 rounded"
               value={type}
-              onChange={(e) =>
-                setType(
-                  e.target.value as
-                    | "MANUAL"
-                    | "MIN_PURCHASE"
-                    | "BUY_ONE_GET_ONE"
-                )
-              }
+              onChange={(e) => setType(e.target.value as any)}
             >
               <option value="MANUAL">Manual</option>
               <option value="MIN_PURCHASE">Minimal Pembelian</option>
@@ -213,6 +216,44 @@ export default function AddDiscountModal({
               />
               <span>Persentase</span>
             </label>
+
+            {type === "MIN_PURCHASE" && (
+              <>
+                <input
+                  type="number"
+                  className="w-full border px-3 py-2 rounded"
+                  placeholder="Minimal Pembelian (Rp)"
+                  value={minPurchase}
+                  onChange={(e) => setMinPurchase(Number(e.target.value))}
+                />
+                <input
+                  type="number"
+                  className="w-full border px-3 py-2 rounded"
+                  placeholder="Diskon Maksimal (Rp)"
+                  value={maxDiscount}
+                  onChange={(e) => setMaxDiscount(Number(e.target.value))}
+                />
+              </>
+            )}
+
+            {type === "BUY_ONE_GET_ONE" && (
+              <>
+                <input
+                  type="number"
+                  className="w-full border px-3 py-2 rounded"
+                  placeholder="Jumlah Beli"
+                  value={buyQuantity}
+                  onChange={(e) => setBuyQuantity(Number(e.target.value))}
+                />
+                <input
+                  type="number"
+                  className="w-full border px-3 py-2 rounded"
+                  placeholder="Jumlah Gratis"
+                  value={getQuantity}
+                  onChange={(e) => setGetQuantity(Number(e.target.value))}
+                />
+              </>
+            )}
 
             <div className="flex gap-2">
               <input

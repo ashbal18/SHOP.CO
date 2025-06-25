@@ -40,20 +40,17 @@ class ProductController {
                 const priceInt = parseInt(price);
                 const quantityInt = parseInt(quantity !== null && quantity !== void 0 ? quantity : "0");
                 if (isNaN(priceInt) || priceInt < 0) {
-                    res
-                        .status(400)
-                        .json({ error: "Price must be a valid positive integer" });
+                    res.status(400).json({ error: "Price must be a valid positive integer" });
                 }
                 if (isNaN(quantityInt) || quantityInt < 0) {
-                    res
-                        .status(400)
-                        .json({ error: "Quantity must be a valid non-negative integer" });
+                    res.status(400).json({ error: "Quantity must be a valid non-negative integer" });
                 }
                 let imageUrl = "";
                 if (req.file) {
                     const result = yield (0, cloudinary_1.cloudinaryUpload)(req.file, "products");
                     imageUrl = result.secure_url;
                 }
+                // ✅ Buat produk terlebih dahulu
                 const newProduct = yield prisma_1.default.product.create({
                     data: {
                         name,
@@ -63,11 +60,22 @@ class ProductController {
                         categoryId,
                     },
                 });
-                yield prisma_1.default.productStock.create({
+                // ✅ Buat stok awal
+                const newStock = yield prisma_1.default.productStock.create({
                     data: {
                         productId: newProduct.id,
                         storeId,
                         quantity: quantityInt,
+                    },
+                });
+                // ✅ Catat riwayat stok (StockHistory)
+                yield prisma_1.default.stockHistory.create({
+                    data: {
+                        storeId,
+                        productId: newProduct.id,
+                        type: "ADD", // enum: ADD, REMOVE, ADJUST
+                        quantity: quantityInt,
+                        description: "Stok awal saat produk dibuat",
                     },
                 });
                 res.status(201).json(newProduct);

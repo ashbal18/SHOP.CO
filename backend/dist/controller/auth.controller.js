@@ -36,9 +36,7 @@ class AuthController {
                     // Hash the password
                     const salt = yield (0, bcrypt_1.genSalt)(10);
                     const hashedPass = yield (0, bcrypt_1.hash)(password, salt);
-                    // Generate a unique referral code for the new user
                     const newReferralCode = Math.random().toString(36).substring(2, 10);
-                    // Create the new user
                     const user = yield prisma_1.default.user.create({
                         data: {
                             name,
@@ -237,18 +235,13 @@ class AuthController {
                 }
                 else {
                     const { password, confirmPassword } = req.body;
-                    // Check if passwords match
                     if (password !== confirmPassword) {
-                        // Send response when passwords do not match
                         res.status(400).send({ message: "Passwords do not match" });
                     }
                     else {
-                        // Decode the token to get the user's email
                         const decoded = (0, jsonwebtoken_1.verify)(token, process.env.KEY_JWT);
-                        // Find the user based on email decoded from the token
                         const user = yield prisma_1.default.user.findUnique({ where: { email: decoded.email } });
                         if (!user) {
-                            // Send response if user does not exist
                             res.status(400).send({ message: "Invalid password reset token" });
                         }
                         else {

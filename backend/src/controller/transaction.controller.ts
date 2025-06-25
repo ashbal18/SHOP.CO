@@ -38,7 +38,6 @@ export class TransactionController {
       res.status(400).json({ message: "Data tidak lengkap" });
     }
 
-    // Ambil alamat lengkap dari Address
     const address = await prisma.address.findUnique({
       where: { address_id: shippingAddress },
     });

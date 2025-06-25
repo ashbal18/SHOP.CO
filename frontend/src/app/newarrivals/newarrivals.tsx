@@ -19,6 +19,16 @@ type Stock = {
   quantity: number;
 };
 
+type Discount = {
+  id: string;
+  name: string;
+  type: "MANUAL" | "MIN_PURCHASE" | "BUY_ONE_GET_ONE";
+  amount: number;
+  isPercentage: boolean;
+  startDate: string;
+  endDate: string;
+};
+
 type Product = {
   id: string;
   name: string;
@@ -28,6 +38,7 @@ type Product = {
   category?: Category;
   store?: Store;
   stocks?: Stock[];
+  discount?: Discount | null;
 };
 
 export default function Newarrivals() {
@@ -51,9 +62,7 @@ export default function Newarrivals() {
         const [productRes, storeRes] = await Promise.all([
           axios.get("/product2/new-arrivals"),
           axios.get("/store", {
-            headers: {
-              Authorization: `Bearer ${session.accessToken}`,
-            },
+            headers: { Authorization: `Bearer ${session.accessToken}` },
           }),
         ]);
 
@@ -86,6 +95,20 @@ export default function Newarrivals() {
       return matchName && matchCategory && matchStore;
     });
   }, [products, search, selectedCategory, selectedStoreId]);
+
+  const calculateDiscountedPrice = (product: Product) => {
+    const discount = product.discount;
+    if (!discount) return product.price;
+
+    if (discount.type === "MANUAL") {
+      return discount.isPercentage
+        ? product.price - (product.price * discount.amount) / 100
+        : product.price - discount.amount;
+    }
+
+    // Untuk jenis MIN_PURCHASE atau BUY_ONE_GET_ONE bisa dihandle sesuai tampilan saja
+    return product.price;
+  };
 
   if (loadingSession || isLoading) {
     return (
@@ -156,10 +179,12 @@ export default function Newarrivals() {
         {/* PRODUCT LIST */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {filteredProducts.map((product) => {
-            const totalStock =
-              Array.isArray(product.stocks)
-                ? product.stocks.reduce((sum, s) => sum + (s.quantity || 0), 0)
-                : 0;
+            const totalStock = Array.isArray(product.stocks)
+              ? product.stocks.reduce((sum, s) => sum + (s.quantity || 0), 0)
+              : 0;
+
+            const hasDiscount = !!product.discount;
+            const finalPrice = calculateDiscountedPrice(product);
 
             return (
               <div
@@ -178,9 +203,25 @@ export default function Newarrivals() {
                   <p className="text-sm text-gray-600 truncate">
                     {product.description}
                   </p>
-                  <p className="mt-2 text-xl font-semibold text-gray-800">
-                    ${product.price}
-                  </p>
+
+                  {hasDiscount ? (
+                    <>
+                      <p className="mt-2 text-sm text-red-500 line-through">
+                        Rp {product.price.toLocaleString("id-ID")}
+                      </p>
+                      <p className="text-xl font-bold text-green-600">
+                        Rp {Math.max(finalPrice, 0).toLocaleString("id-ID")}
+                      </p>
+                      <p className="text-xs text-yellow-600 italic">
+                        {product.discount?.name} ({product.discount?.type})
+                      </p>
+                    </>
+                  ) : (
+                    <p className="mt-2 text-xl font-semibold text-gray-800">
+                      Rp {product.price.toLocaleString("id-ID")}
+                    </p>
+                  )}
+
                   <p className="text-sm text-gray-500">
                     Stok: <span className="font-medium">{totalStock}</span>
                   </p>

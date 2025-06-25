@@ -10,30 +10,28 @@ interface Product {
   description: string;
   price: number;
   originalPrice: number;
-  finalPrice?: number;
-  discount?: {
-    id: string;
-    amount: number;
-    isPercentage: boolean;
-    startDate: string;
-    endDate: string;
-  } | null;
   imageUrl: string;
   images?: string[];
-  category: {
-    name: string;
-  };
-  stocks: {
-    quantity: number;
-  };
-  weight: number; // ✅ tambahkan jika tersedia
+  category: { name: string };
+  stocks: { quantity: number };
+  weight: number;
   storeId: string;
   store?: {
     id: string;
     city_id: string;
   };
+  discount?: {
+    id: string;
+    type: "MANUAL" | "MIN_PURCHASE" | "BUY_ONE_GET_ONE";
+    amount: number;
+    isPercentage: boolean;
+    startDate: string;
+    endDate: string;
+    minPurchase?: number;
+    buyQuantity?: number;
+    getQuantity?: number;
+  } | null;
 }
-
 
 export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
@@ -63,6 +61,33 @@ export default function ProductDetailPage() {
     fetchProduct();
   }, [id]);
 
+  const isDiscountActive = (discount: Product["discount"]) => {
+    if (!discount) return false;
+    const now = new Date();
+    return now >= new Date(discount.startDate) && now <= new Date(discount.endDate);
+  };
+
+  const canApplyDiscount = () => {
+    if (!product?.discount || !isDiscountActive(product.discount)) return false;
+
+    const { type, minPurchase, buyQuantity } = product.discount;
+
+    if (type === "MIN_PURCHASE") return quantity >= (minPurchase || 0);
+    if (type === "BUY_ONE_GET_ONE") return quantity >= (buyQuantity || 1);
+
+    return true;
+  };
+
+  const calculateFinalPrice = () => {
+    if (!product) return 0;
+    if (!canApplyDiscount()) return product.price;
+
+    const { isPercentage, amount } = product.discount!;
+    return isPercentage
+      ? product.price - (product.price * amount) / 100
+      : product.price - amount;
+  };
+
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
@@ -79,6 +104,11 @@ export default function ProductDetailPage() {
       </div>
     );
   }
+
+  const finalPrice = calculateFinalPrice();
+  const hasDiscount = finalPrice < product.price;
+  const discount = product.discount;
+  const eligible = canApplyDiscount();
 
   return (
     <section className="w-full px-4 py-10 lg:py-16 bg-white">
@@ -115,28 +145,45 @@ export default function ProductDetailPage() {
 
           {/* Price */}
           <div className="flex items-center gap-4">
-            {product.finalPrice !== undefined && product.finalPrice < product.price ? (
+            {hasDiscount ? (
               <>
                 <span className="text-2xl font-bold text-green-600">
-                  Rp{product.finalPrice.toLocaleString()}
+                  Rp{finalPrice.toLocaleString("id-ID")}
                 </span>
                 <span className="line-through text-gray-400 text-sm">
-                  Rp{product.price.toLocaleString()}
+                  Rp{product.price.toLocaleString("id-ID")}
                 </span>
                 <span className="text-sm text-red-500 font-medium">
-                  {product.discount && product.discount.isPercentage
-                    ? `-${product.discount.amount}%`
-                    : product.discount
-                    ? `-Rp${product.discount.amount.toLocaleString()}`
-                    : ""}
+                  {discount?.isPercentage
+                    ? `-${discount.amount}%`
+                    : `-Rp${discount?.amount.toLocaleString("id-ID")}`}
                 </span>
               </>
             ) : (
               <span className="text-2xl font-bold text-gray-900">
-                Rp{product.price.toLocaleString()}
+                Rp{product.price.toLocaleString("id-ID")}
               </span>
             )}
           </div>
+
+          {/* Info Diskon */}
+          {discount && isDiscountActive(discount) && !eligible && (
+            <p className="text-sm text-red-600 italic">
+              {discount.type === "MIN_PURCHASE" &&
+                `Diskon aktif jika beli minimal ${discount.minPurchase} item.`}
+              {discount.type === "BUY_ONE_GET_ONE" &&
+                `Promo Beli ${discount.buyQuantity}, Gratis ${discount.getQuantity}.`}
+              <br />
+            </p>
+          )}
+
+          {discount?.type === "BUY_ONE_GET_ONE" &&
+            isDiscountActive(discount) &&
+            eligible && (
+              <p className="text-sm text-yellow-600 italic">
+                Promo: Beli {discount.buyQuantity} Gratis {discount.getQuantity}
+              </p>
+            )}
 
           {/* Quantity & Buttons */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 gap-3">
@@ -156,7 +203,9 @@ export default function ProductDetailPage() {
               </button>
             </div>
 
-            <button className="w-full sm:w-auto bg-black text-white px-6 py-3 rounded-md hover:bg-gray-800 transition">
+            <button
+              className="w-full sm:w-auto bg-black text-white px-6 py-3 rounded-md hover:bg-gray-800 transition"
+            >
               Add to Cart
             </button>
 
@@ -171,12 +220,12 @@ export default function ProductDetailPage() {
                 const checkoutData = {
                   id: product.id,
                   name: product.name,
-                  price: product.finalPrice ?? product.price,
+                  price: finalPrice,
                   imageUrl: selectedImage,
                   quantity,
                   storeId: product.store?.id ?? "",
-                  weight: product.weight ?? 1000, 
-                  originCityId: product.store.city_id, 
+                  weight: product.weight ?? 1000,
+                  originCityId: product.store.city_id,
                 };
 
                 localStorage.setItem("checkout", JSON.stringify(checkoutData));
