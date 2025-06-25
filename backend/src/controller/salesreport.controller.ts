@@ -335,6 +335,74 @@ export class SalesReportController {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+async getAllProductWithStock(req: Request, res: Response) {
+  try {
+    const user = req.user;
+
+    let filterStoreId: string | undefined;
+    if (user?.role !== "super_admin") {
+      filterStoreId = (user as any).storeId;
+    }
+
+    // Ambil data produk + stok per toko
+    const products = await prisma.product.findMany({
+      include: {
+        stocks: {
+          where: filterStoreId ? { storeId: filterStoreId } : {},
+          include: {
+            store: true,
+          },
+        },
+      },
+    });
+
+    // Ambil semua order item untuk hitung jumlah terjual
+    const orderItems = await prisma.orderItem.findMany({
+      where: {
+        order: {
+          status: { in: ["PAID", "COMPLETED"] },
+          ...(filterStoreId ? { storeId: filterStoreId } : {}),
+        },
+      },
+      select: {
+        productId: true,
+        quantity: true,
+        order: {
+          select: {
+            storeId: true,
+          },
+        },
+      },
+    });
+
+    // Hitung total terjual per produk per toko
+    const soldMap = new Map<string, number>(); // key = `${productId}_${storeId}`
+    for (const item of orderItems) {
+      const key = `${item.productId}_${item.order.storeId}`;
+      soldMap.set(key, (soldMap.get(key) || 0) + item.quantity);
+    }
+
+    // Gabungkan data stok dan penjualan
+    const result = products.flatMap(product =>
+      product.stocks.map(stock => {
+        const key = `${product.id}_${stock.storeId}`;
+        return {
+          productId: product.id,
+          productName: product.name,
+          storeId: stock.storeId,
+          storeName: stock.store.name,
+          stock: stock.quantity,
+          totalSold: soldMap.get(key) || 0,
+        };
+      })
+    );
+
+    res.json(result);
+  } catch (err) {
+    console.error("getAllProductWithStock error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 
 
 }

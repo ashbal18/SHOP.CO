@@ -49,6 +49,18 @@ export class SalesReportRouter {
       this.controller.salesStockHistory
     );
 
+    this.router.get(
+      "/product-stock",
+      this.authMiddleware.verifyToken,
+      this.controller.getAllProductWithStock
+    );
+
+    this.router.get(
+      "/sales/products/with-stock",
+      this.authMiddleware.verifyToken,
+      this.controller.getAllProductWithStock
+    );
+
     this.router.post(
       "/stock/remove",
       this.authMiddleware.verifyToken,

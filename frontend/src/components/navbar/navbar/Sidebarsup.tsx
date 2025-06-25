@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FiUsers, FiGrid, FiLogOut, FiHome, FiMenu, FiX } from "react-icons/fi";
+import { FiUsers, FiGrid, FiLogOut, FiHome, FiMenu, FiX, FiBarChart } from "react-icons/fi";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
 
@@ -15,7 +15,7 @@ export default function Sidebarsup() {
     { name: "Kelola Store Admin", href: "/super-admin/kelola_store", icon: <FiHome size={20} /> },
     { name: "Semua Pengguna", href: "/super-admin/semuapengguna", icon: <FiUsers size={20} /> },
     { name: "Kelola Toko", href: "/super-admin/store_management", icon: <FiHome size={20} /> },
-    { name: "Kelola_Penjualan", href: "/super-admin/data_penjualan", icon: <FiHome size={20} /> },
+    { name: "Kelola_Penjualan", href: "/super-admin/data_penjualan", icon: <FiBarChart size={20} /> },
     
   ];
 
