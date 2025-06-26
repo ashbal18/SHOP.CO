@@ -20,6 +20,8 @@ class SalesReportRouter {
         this.router.get("/sales/stock/summary", this.authMiddleware.verifyToken, this.controller.stockSummary);
         // ✅ STOCK REPORT - Riwayat detail stok per produk
         this.router.get("/sales/stock/history", this.authMiddleware.verifyToken, this.controller.salesStockHistory);
+        this.router.get("/product-stock", this.authMiddleware.verifyToken, this.controller.getAllProductWithStock);
+        this.router.get("/sales/products/with-stock", this.authMiddleware.verifyToken, this.controller.getAllProductWithStock);
         this.router.post("/stock/remove", this.authMiddleware.verifyToken, this.controller.removeStock);
     }
     getRouter() {

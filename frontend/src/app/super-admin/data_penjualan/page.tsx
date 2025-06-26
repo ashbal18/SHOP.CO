@@ -30,6 +30,11 @@ type StockSummary = { totalAdded: number; totalRemoved: number; stockEnding: num
 type StockHistory = { productId: string; productName: string; type: string; quantity: number; description: string; date: string };
 type StoreMonthlySales = { storeId: string; storeName: string; monthlySales: { month: number; totalAmount: number }[] };
 type ProductStockData = { productId: string; productName: string; storeId: string; storeName: string; stock: number; totalSold: number };
+type MonthlySalesChartRow = {
+  month: number;
+} & {
+  [storeId: string]: number | string;
+};
 
 export default function SalesDataSuperAdminPage() {
   const { data: session, status } = useSession();
@@ -169,7 +174,6 @@ export default function SalesDataSuperAdminPage() {
             </div>
           ) : (
             <>
-              {/* Chart Penjualan per Produk */}
               <section className="mb-6">
                 <h2 className="text-xl font-semibold mb-4">Penjualan per Produk</h2>
                 <ResponsiveContainer width="100%" height={300}>
@@ -184,7 +188,6 @@ export default function SalesDataSuperAdminPage() {
                 </ResponsiveContainer>
               </section>
 
-              {/* Chart Pendapatan per Kategori */}
               <section className="mb-6">
                 <h2 className="text-xl font-semibold mb-4">Pendapatan per Kategori</h2>
                 <ResponsiveContainer width="100%" height={300}>
@@ -199,7 +202,6 @@ export default function SalesDataSuperAdminPage() {
                 </ResponsiveContainer>
               </section>
 
-              {/* Tabel Stok & Terjual */}
               <section className="mb-6">
                 <h2 className="text-xl font-semibold mb-4">Stok & Terjual per Produk</h2>
                 <div className="overflow-x-auto bg-white rounded shadow">
@@ -226,7 +228,6 @@ export default function SalesDataSuperAdminPage() {
                 </div>
               </section>
 
-              {/* Ringkasan Stok */}
               <section className="mb-6">
                 <h2 className="text-xl font-semibold mb-4">Ringkasan Stok</h2>
                 <div className="bg-white p-4 rounded shadow">
@@ -236,7 +237,6 @@ export default function SalesDataSuperAdminPage() {
                 </div>
               </section>
 
-              {/* Histori Perubahan Stok */}
               <section className="mb-6">
                 <h2 className="text-xl font-semibold mb-4">Histori Perubahan Stok</h2>
                 <div className="overflow-x-auto bg-white rounded shadow">
@@ -265,23 +265,24 @@ export default function SalesDataSuperAdminPage() {
                 </div>
               </section>
 
-              {/* Perbandingan Penjualan Bulanan */}
               <section className="mb-6">
                 <h2 className="text-xl font-semibold mb-4">Perbandingan Penjualan Bulanan Semua Toko</h2>
                 <ResponsiveContainer width="100%" height={400}>
                   <BarChart
-                    data={Array.from({ length: 12 }, (_, i) => {
-                      const month = i + 1;
-                      const row: any = { month };
-                      monthlySalesPerStore.forEach((store) => {
-                        const found = store.monthlySales.find((ms) => ms.month === month);
-                        row[store.storeId] = found ? found.totalAmount : 0;
-                      });
+                    data={Array.from({ length: 12 }, (_, i): MonthlySalesChartRow => {
+                      const monthNumber = i + 1;
+                      const row: MonthlySalesChartRow = monthlySalesPerStore.reduce((acc, store) => {
+                        const found = store.monthlySales.find((ms) => ms.month === monthNumber);
+                        return {
+                          ...acc,
+                          [store.storeId]: found ? found.totalAmount : 0,
+                        };
+                      }, { month: monthNumber });
                       return row;
                     })}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" type="number" domain={[1, 12]} tickFormatter={(m) => MONTHS[m - 1]} />
+                    <XAxis dataKey="month" type="number" domain={[1, 12]} tickFormatter={(m) => MONTHS[Number(m) - 1]} />
                     <YAxis />
                     <Tooltip />
                     <Legend />
