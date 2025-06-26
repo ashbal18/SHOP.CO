@@ -314,5 +314,65 @@ class SalesReportController {
             }
         });
     }
+    getAllProductWithStock(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = req.user;
+                let filterStoreId;
+                if ((user === null || user === void 0 ? void 0 : user.role) !== "super_admin") {
+                    filterStoreId = user.storeId;
+                }
+                // Ambil data produk + stok per toko
+                const products = yield prisma_1.default.product.findMany({
+                    include: {
+                        stocks: {
+                            where: filterStoreId ? { storeId: filterStoreId } : {},
+                            include: {
+                                store: true,
+                            },
+                        },
+                    },
+                });
+                // Ambil semua order item untuk hitung jumlah terjual
+                const orderItems = yield prisma_1.default.orderItem.findMany({
+                    where: {
+                        order: Object.assign({ status: { in: ["PAID", "COMPLETED"] } }, (filterStoreId ? { storeId: filterStoreId } : {})),
+                    },
+                    select: {
+                        productId: true,
+                        quantity: true,
+                        order: {
+                            select: {
+                                storeId: true,
+                            },
+                        },
+                    },
+                });
+                // Hitung total terjual per produk per toko
+                const soldMap = new Map(); // key = `${productId}_${storeId}`
+                for (const item of orderItems) {
+                    const key = `${item.productId}_${item.order.storeId}`;
+                    soldMap.set(key, (soldMap.get(key) || 0) + item.quantity);
+                }
+                // Gabungkan data stok dan penjualan
+                const result = products.flatMap(product => product.stocks.map(stock => {
+                    const key = `${product.id}_${stock.storeId}`;
+                    return {
+                        productId: product.id,
+                        productName: product.name,
+                        storeId: stock.storeId,
+                        storeName: stock.store.name,
+                        stock: stock.quantity,
+                        totalSold: soldMap.get(key) || 0,
+                    };
+                }));
+                res.json(result);
+            }
+            catch (err) {
+                console.error("getAllProductWithStock error:", err);
+                res.status(500).json({ error: "Internal Server Error" });
+            }
+        });
+    }
 }
 exports.SalesReportController = SalesReportController;
