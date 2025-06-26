@@ -23,43 +23,17 @@ const MONTHS = [
   "Juli", "Agustus", "September", "Oktober", "November", "Desember"
 ];
 
-type Store = {
-  id: string;
-  name: string;
-};
-
-type Sale = {
-  productId: string;
-  name: string;
-  totalSold: number;
-  totalRevenue: number;
-};
-
-type CategorySale = {
-  category: string;
-  totalSold: number;
-  totalRevenue: number;
-};
-
-type StockSummary = {
-  totalAdded: number;
-  totalRemoved: number;
-  stockEnding: number;
-};
-
-type StockHistory = {
-  productId: string;
-  productName: string;
-  type: string;
-  quantity: number;
-  description: string;
-  date: string;
-};
-
-type StoreMonthlySales = {
-  storeId: string;
-  storeName: string;
-  monthlySales: { month: number; totalAmount: number }[];
+type Store = { id: string; name: string };
+type Sale = { productId: string; name: string; totalSold: number; totalRevenue: number };
+type CategorySale = { category: string; totalSold: number; totalRevenue: number };
+type StockSummary = { totalAdded: number; totalRemoved: number; stockEnding: number };
+type StockHistory = { productId: string; productName: string; type: string; quantity: number; description: string; date: string };
+type StoreMonthlySales = { storeId: string; storeName: string; monthlySales: { month: number; totalAmount: number }[] };
+type ProductStockData = { productId: string; productName: string; storeId: string; storeName: string; stock: number; totalSold: number };
+type MonthlySalesChartRow = {
+  month: number;
+} & {
+  [storeId: string]: number | string;
 };
 
 export default function SalesDataSuperAdminPage() {
@@ -68,13 +42,10 @@ export default function SalesDataSuperAdminPage() {
   const [selectedStoreId, setSelectedStoreId] = useState<string>("");
   const [sales, setSales] = useState<Sale[]>([]);
   const [categorySales, setCategorySales] = useState<CategorySale[]>([]);
-  const [stockSummary, setStockSummary] = useState<StockSummary>({
-    totalAdded: 0,
-    totalRemoved: 0,
-    stockEnding: 0,
-  });
+  const [stockSummary, setStockSummary] = useState<StockSummary>({ totalAdded: 0, totalRemoved: 0, stockEnding: 0 });
   const [stockHistory, setStockHistory] = useState<StockHistory[]>([]);
   const [monthlySalesPerStore, setMonthlySalesPerStore] = useState<StoreMonthlySales[]>([]);
+  const [productStockData, setProductStockData] = useState<ProductStockData[]>([]);
   const [loading, setLoading] = useState(true);
   const [year] = useState<number>(2025);
   const [month, setMonth] = useState<number>(6);
@@ -101,7 +72,7 @@ export default function SalesDataSuperAdminPage() {
       if (!session?.accessToken || !selectedStoreId) return;
       setLoading(true);
       try {
-        const [productRes, categoryRes, stockRes, historyRes] = await Promise.all([
+        const [productRes, categoryRes, stockRes, historyRes, productStockRes] = await Promise.all([
           axios.get(`/report/sales/product`, {
             params: { year, month, storeId: selectedStoreId },
             headers: { Authorization: `Bearer ${session.accessToken}` },
@@ -118,12 +89,17 @@ export default function SalesDataSuperAdminPage() {
             params: { year, month, storeId: selectedStoreId },
             headers: { Authorization: `Bearer ${session.accessToken}` },
           }),
+          axios.get(`/report/product-stock`, {
+            params: { year, month, storeId: selectedStoreId },
+            headers: { Authorization: `Bearer ${session.accessToken}` },
+          }),
         ]);
 
         setSales(productRes.data);
         setCategorySales(categoryRes.data);
         setStockSummary(stockRes.data);
         setStockHistory(historyRes.data);
+        setProductStockData(productStockRes.data);
       } catch (err) {
         console.error("Gagal memuat data laporan:", err);
       } finally {
@@ -176,9 +152,7 @@ export default function SalesDataSuperAdminPage() {
                 className="border border-gray-300 rounded px-3 py-1"
               >
                 {stores.map((store) => (
-                  <option key={store.id} value={store.id}>
-                    {store.name}
-                  </option>
+                  <option key={store.id} value={store.id}>{store.name}</option>
                 ))}
               </select>
               <select
@@ -187,9 +161,7 @@ export default function SalesDataSuperAdminPage() {
                 className="border border-gray-300 rounded px-3 py-1"
               >
                 {MONTHS.map((m, index) => (
-                  <option key={index} value={index + 1}>
-                    {m}
-                  </option>
+                  <option key={index} value={index + 1}>{m}</option>
                 ))}
               </select>
             </div>
@@ -231,6 +203,32 @@ export default function SalesDataSuperAdminPage() {
               </section>
 
               <section className="mb-6">
+                <h2 className="text-xl font-semibold mb-4">Stok & Terjual per Produk</h2>
+                <div className="overflow-x-auto bg-white rounded shadow">
+                  <table className="min-w-full">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th className="py-2 px-4 border">Produk</th>
+                        <th className="py-2 px-4 border">Toko</th>
+                        <th className="py-2 px-4 border">Stok</th>
+                        <th className="py-2 px-4 border">Terjual</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {productStockData.map((entry, index) => (
+                        <tr key={index}>
+                          <td className="border px-4 py-2">{entry.productName}</td>
+                          <td className="border px-4 py-2">{entry.storeName}</td>
+                          <td className="border px-4 py-2">{entry.stock}</td>
+                          <td className="border px-4 py-2">{entry.totalSold}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section className="mb-6">
                 <h2 className="text-xl font-semibold mb-4">Ringkasan Stok</h2>
                 <div className="bg-white p-4 rounded shadow">
                   <p>Total Masuk: {stockSummary.totalAdded}</p>
@@ -255,9 +253,7 @@ export default function SalesDataSuperAdminPage() {
                     <tbody>
                       {stockHistory.map((entry, index) => (
                         <tr key={index}>
-                          <td className="border px-4 py-2">
-                            {new Date(entry.date).toLocaleDateString("id-ID")}
-                          </td>
+                          <td className="border px-4 py-2">{new Date(entry.date).toLocaleDateString("id-ID")}</td>
                           <td className="border px-4 py-2">{entry.productName}</td>
                           <td className="border px-4 py-2">{entry.type}</td>
                           <td className="border px-4 py-2">{entry.quantity}</td>
@@ -272,16 +268,28 @@ export default function SalesDataSuperAdminPage() {
               <section className="mb-6">
                 <h2 className="text-xl font-semibold mb-4">Perbandingan Penjualan Bulanan Semua Toko</h2>
                 <ResponsiveContainer width="100%" height={400}>
-                  <BarChart>
+                  <BarChart
+                    data={Array.from({ length: 12 }, (_, i): MonthlySalesChartRow => {
+                      const monthNumber = i + 1;
+                      const row: MonthlySalesChartRow = monthlySalesPerStore.reduce((acc, store) => {
+                        const found = store.monthlySales.find((ms) => ms.month === monthNumber);
+                        return {
+                          ...acc,
+                          [store.storeId]: found ? found.totalAmount : 0,
+                        };
+                      }, { month: monthNumber });
+                      return row;
+                    })}
+                  >
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" type="number" domain={[1, 12]} tickFormatter={(m) => MONTHS[m - 1]} />
+                    <XAxis dataKey="month" type="number" domain={[1, 12]} tickFormatter={(m) => MONTHS[Number(m) - 1]} />
                     <YAxis />
                     <Tooltip />
                     <Legend />
                     {monthlySalesPerStore.map((store, index) => (
                       <Bar
                         key={store.storeId}
-                        dataKey="totalAmount"
+                        dataKey={store.storeId}
                         name={store.storeName}
                         fill={`hsl(${(index * 137.5) % 360}, 70%, 50%)`}
                       />

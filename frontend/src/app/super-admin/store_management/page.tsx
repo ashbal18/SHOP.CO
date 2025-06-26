@@ -7,6 +7,7 @@ import axios from "@/lib/axios";
 import { useSession } from "next-auth/react";
 import AddCategoryModal from "./modal/AddCategoryModal";
 import AddProductModal from "./modal/AddProductModal";
+import EditProductModal from "./modal/EditProductModal";
 import Navbar from "@/components/navbar/navbar/Navbar";
 import Sidebarsup from "@/components/navbar/navbar/Sidebarsup";
 import Footer from "@/components/navbar/navbar/footer";
@@ -33,6 +34,8 @@ interface Product {
   totalStock?: number;
   store?: Store;
   category?: Category;
+  description?: string;
+  quantity?: number;
 }
 
 export default function TopSellingSection() {
@@ -47,6 +50,8 @@ export default function TopSellingSection() {
 
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [isEditProductOpen, setIsEditProductOpen] = useState(false);
+  const [productToEdit, setProductToEdit] = useState<Product | null>(null);
 
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null);
@@ -54,37 +59,37 @@ export default function TopSellingSection() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!token) return;
-      setIsLoading(true);
-      try {
-        const [prodRes, catRes, storeRes] = await Promise.all([
-          axios.get<Product[]>("/product/all", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get<Category[]>("/category", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get<Store[]>("/store", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-        setProducts(prodRes.data);
-        setCategories(catRes.data);
-        setStores(storeRes.data);
-      } catch (err) {
-        setError("Gagal memuat data");
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Fetch all data (product, category, store)
+  const fetchData = async () => {
+    if (!token) return;
+    setIsLoading(true);
+    try {
+      const [prodRes, catRes, storeRes] = await Promise.all([
+        axios.get<Product[]>("/product/all", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get<Category[]>("/category", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get<Store[]>("/store", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+      setProducts(prodRes.data);
+      setCategories(catRes.data);
+      setStores(storeRes.data);
+    } catch (err) {
+      setError("Gagal memuat data");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, [token]);
 
-  // Reset pagination saat filter berubah
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedCategoryId, selectedStoreId]);
@@ -97,12 +102,25 @@ export default function TopSellingSection() {
     setProducts((prev) => [...prev, newProduct]);
   };
 
+  const handleEditProductClick = (product: Product) => {
+    setProductToEdit(product);
+    setIsEditProductOpen(true);
+  };
+
+  const handleUpdateProduct = () => {
+    fetchData(); // Refresh semua data setelah update produk
+  };
+
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       const matchStore =
-        selectedStoreId === null || product.store?.id === selectedStoreId || product.storeId === selectedStoreId;
+        selectedStoreId === null ||
+        product.store?.id === selectedStoreId ||
+        product.storeId === selectedStoreId;
       const matchCategory =
-        selectedCategoryId === null || product.category?.id === selectedCategoryId || product.categoryId === selectedCategoryId;
+        selectedCategoryId === null ||
+        product.category?.id === selectedCategoryId ||
+        product.categoryId === selectedCategoryId;
 
       return matchStore && matchCategory;
     });
@@ -159,15 +177,13 @@ export default function TopSellingSection() {
               </div>
             </div>
 
-            {/* Filter Store */}
+            {/* Filter */}
             <div className="mb-6">
-              <h3 className="font-semibold mb-2">Filter by Store</h3>
+              <h3 className="font-semibold mb-2">Filter Toko</h3>
               <select
                 className="border px-4 py-2 rounded w-full md:w-64"
                 value={selectedStoreId ?? ""}
-                onChange={(e) => {
-                  setSelectedStoreId(e.target.value || null);
-                }}
+                onChange={(e) => setSelectedStoreId(e.target.value || null)}
               >
                 <option value="">Semua Toko</option>
                 {stores.map((store) => (
@@ -178,9 +194,8 @@ export default function TopSellingSection() {
               </select>
             </div>
 
-            {/* Filter Kategori */}
             <div className="mb-6">
-              <h3 className="font-semibold mb-2">Filter by Category</h3>
+              <h3 className="font-semibold mb-2">Filter Kategori</h3>
               <div className="flex flex-wrap gap-3">
                 <button
                   onClick={() => setSelectedCategoryId(null)}
@@ -246,6 +261,12 @@ export default function TopSellingSection() {
                       <p className="text-xs text-gray-500 italic mt-1">
                         {product.category?.name} • {product.store?.name ?? "Tanpa Toko"}
                       </p>
+                      <button
+                        onClick={() => handleEditProductClick(product)}
+                        className="mt-2 text-sm text-blue-600 hover:underline"
+                      >
+                        Edit
+                      </button>
                     </div>
                   </div>
                 ))
@@ -293,6 +314,19 @@ export default function TopSellingSection() {
         open={isAddProductOpen}
         onClose={() => setIsAddProductOpen(false)}
         onAdd={handleAddProduct}
+        categories={categories}
+        stores={stores}
+        token={token}
+      />
+      <EditProductModal
+        key={productToEdit?.id} // untuk reset modal state saat ganti produk
+        open={isEditProductOpen}
+        onClose={() => {
+          setIsEditProductOpen(false);
+          setProductToEdit(null);
+        }}
+        productToEdit={productToEdit}
+        onUpdate={handleUpdateProduct}
         categories={categories}
         stores={stores}
         token={token}

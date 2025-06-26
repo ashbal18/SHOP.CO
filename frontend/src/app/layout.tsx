@@ -21,8 +21,7 @@ export const metadata: Metadata = {
   description: "SHOP.CO",
     icons: {
     icon: [
-      { url: "/logo.png" }, 
-      { url: "/logo.png", type: "image/svg+xml" }, 
+      { url: "/banner.svg" }, 
     ],
   },
 };
